@@ -50,12 +50,16 @@ function renderLogin({ error } = {}) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign in — Triangle Loan Database</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: light dark; }
+  :root { color-scheme: light; }
+  *{ box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
+    font-family: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #F4F6F2;
+    color: #1C211E;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -63,39 +67,79 @@ function renderLogin({ error } = {}) {
     margin: 0;
   }
   main {
-    background: #1e293b;
-    border-radius: 12px;
-    padding: 2.5rem;
+    background: #FFFFFF;
+    border-radius: 14px;
+    border-top: 5px solid #1A9E36;
+    padding: 2.25rem 2.25rem 2.5rem;
     width: min(90vw, 360px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 10px 40px rgba(28, 33, 30, 0.12);
   }
-  h1 { font-size: 1.25rem; margin: 0 0 1.5rem; text-align: center; }
+  .brand { display: flex; align-items: center; gap: 9px; margin-bottom: 6px; }
+  .tri {
+    width: 0; height: 0; flex: none;
+    border-left: 11px solid #1A9E36;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+  }
+  .brand h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.02em;
+    margin: 0;
+    color: #1C211E;
+  }
+  .sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6C736A;
+    margin: 0 0 1.75rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #DEE2DA;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+    color: #1C211E;
+  }
   input[type="password"] {
     width: 100%;
-    box-sizing: border-box;
-    padding: 0.75rem;
+    padding: 0.7rem 0.8rem;
     border-radius: 8px;
-    border: 1px solid #334155;
-    background: #0f172a;
-    color: #e2e8f0;
+    border: 1.5px solid #1A9E36;
+    background: #FFFFFF;
+    color: #1C211E;
     font-size: 1rem;
-    margin-bottom: 1rem;
+    font-family: inherit;
+    margin-bottom: 1.25rem;
+  }
+  input[type="password"]:focus {
+    outline: none;
+    border-color: #0F7A28;
+    box-shadow: 0 0 0 3px #EAF4EB;
   }
   button {
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.8rem;
     border-radius: 8px;
     border: none;
-    background: #2563eb;
+    background: #0F7A28;
     color: white;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
   }
-  button:hover { background: #1d4ed8; }
+  button:hover { background: #0c621f; }
   .error {
-    color: #f87171;
-    font-size: 0.9rem;
+    color: #b3261e;
+    background: #fbeceb;
+    border: 1px solid #f3c9c6;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
     margin: -0.5rem 0 1rem;
     text-align: center;
   }
@@ -103,11 +147,16 @@ function renderLogin({ error } = {}) {
 </head>
 <body>
 <main>
-  <h1>Enter passcode</h1>
+  <div class="brand">
+    <div class="tri"></div>
+    <h1>TRIANGLE</h1>
+  </div>
+  <p class="sub">Investment Group &middot; Loan Database</p>
   <form method="POST" action="/login">
     ${errorHtml}
-    <input type="password" name="passcode" placeholder="Passcode" autofocus required autocomplete="off">
-    <button type="submit">Continue</button>
+    <label for="passcode">Passcode</label>
+    <input type="password" id="passcode" name="passcode" autofocus required autocomplete="off">
+    <button type="submit">Enter</button>
   </form>
 </main>
 </body>
