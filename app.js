@@ -15,10 +15,12 @@ const {
   isValidSessionCookie,
   parseCookies,
 } = require("./lib/auth");
+const { listLoans, createLoan, updateLoan, deleteLoan } = require("./lib/loans");
 
 const app = express();
 app.disable("x-powered-by");
 app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "1mb" }));
 
 const PUBLIC_DIR = path.join(__dirname, "public");
 
@@ -152,6 +154,53 @@ app.use((req, res, next) => {
     return res.redirect(302, "/login");
   }
   res.status(401).type("text").send("Unauthorized");
+});
+
+// Loan portfolio API — reads from and writes to the Neon Postgres database.
+// Sits behind the session-cookie gate above, same as the static site.
+app.get("/api/loans", async (req, res, next) => {
+  try {
+    res.json(await listLoans());
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/loans", async (req, res, next) => {
+  try {
+    const loan = await createLoan(req.body || {});
+    res.status(201).json(loan);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.put("/api/loans/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: "Invalid loan id" });
+    }
+    const loan = await updateLoan(id, req.body || {});
+    if (!loan) return res.status(404).json({ error: "Loan not found" });
+    res.json(loan);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete("/api/loans/:id", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: "Invalid loan id" });
+    }
+    const ok = await deleteLoan(id);
+    if (!ok) return res.status(404).json({ error: "Loan not found" });
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use(express.static(PUBLIC_DIR));
