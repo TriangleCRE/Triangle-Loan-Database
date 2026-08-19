@@ -16,6 +16,7 @@ const {
   parseCookies,
 } = require("./lib/auth");
 const { listLoans, createLoan, updateLoan, deleteLoan } = require("./lib/loans");
+const { listPayments, recordPayment, deleteLatestPayment } = require("./lib/payments");
 
 const app = express();
 app.disable("x-powered-by");
@@ -247,6 +248,65 @@ app.delete("/api/loans/:id", async (req, res, next) => {
     const ok = await deleteLoan(id);
     if (!ok) return res.status(404).json({ error: "Loan not found" });
     res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Payment tracker — recording a payment here is the live alternative to
+// re-uploading a spreadsheet: it deducts the principal portion from the
+// loan's balance immediately and keeps a running history.
+app.get("/api/loans/:id/payments", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: "Invalid loan id" });
+    }
+    res.json(await listPayments(id));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/loans/:id/payments", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: "Invalid loan id" });
+    }
+    const { paidOn, principal, interest, note } = req.body || {};
+    if (!paidOn || typeof paidOn !== "string") {
+      return res.status(400).json({ error: "paidOn (a date) is required" });
+    }
+    const p = principal == null || principal === "" ? 0 : Number(principal);
+    const i = interest == null || interest === "" ? 0 : Number(interest);
+    if (isNaN(p) || isNaN(i)) {
+      return res.status(400).json({ error: "principal and interest must be numbers" });
+    }
+    if (p === 0 && i === 0) {
+      return res.status(400).json({ error: "Enter a principal or interest amount" });
+    }
+    const result = await recordPayment(id, { paidOn, principal: p, interest: i, note });
+    if (!result) return res.status(404).json({ error: "Loan not found" });
+    res.status(201).json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete("/api/loans/:id/payments/:paymentId", async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const paymentId = Number(req.params.paymentId);
+    if (!Number.isInteger(id) || !Number.isInteger(paymentId)) {
+      return res.status(400).json({ error: "Invalid id" });
+    }
+    const result = await deleteLatestPayment(id, paymentId);
+    if (!result) return res.status(404).json({ error: "Not found" });
+    if (result.error === "not_latest") {
+      return res.status(409).json({ error: "Only the most recent payment can be deleted" });
+    }
+    res.json(result);
   } catch (err) {
     next(err);
   }

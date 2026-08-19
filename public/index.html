@@ -66,13 +66,19 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .card h3{font-family:var(--disp);font-weight:600;font-size:1rem;letter-spacing:-.01em;display:flex;align-items:baseline;justify-content:space-between}
 .card h3 .note{font-family:var(--mono);font-size:.64rem;font-weight:400;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
 .ladder{margin-top:20px;display:flex;flex-direction:column;gap:11px}
-.rung{display:grid;grid-template-columns:52px 1fr 44px;align-items:center;gap:12px}
+.rung{display:grid;grid-template-columns:52px 1fr 44px;align-items:center;gap:12px;cursor:pointer;border-radius:6px;padding:3px 4px;margin:0 -4px;transition:background .15s}
+.rung:hover{background:var(--green-wash)}
+.rung.sel{background:var(--green-wash)}
 .rung .yr{font-family:var(--mono);font-size:.82rem;color:var(--ink);font-weight:500}
 .rung .yr.past{color:var(--amber)}
-.rung .track{height:22px;background:var(--paper);border-radius:4px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.rung.sel .yr{color:var(--green-deep);font-weight:700}
+.rung.sel .yr.past{color:var(--amber)}
+.rung .track{height:22px;background:var(--paper);border-radius:4px;position:relative;overflow:hidden;border:1px solid var(--line);transition:border-color .15s,box-shadow .15s}
+.rung.sel .track{border-color:var(--green-deep);box-shadow:0 0 0 2px var(--green-wash)}
 .rung .fill{position:absolute;inset:0 auto 0 0;background:var(--green);border-radius:3px;width:0;transition:width .9s cubic-bezier(.22,1,.36,1)}
 .rung .fill.past{background:var(--amber)}
 .rung .amt{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-align:right}
+.rung.sel .amt{color:var(--green-deep);font-weight:600}
 .rung .cnt{font-family:var(--mono);font-size:.7rem;color:#fff;position:absolute;left:8px;top:50%;transform:translateY(-50%);font-weight:500;opacity:0;transition:opacity .5s .4s;white-space:nowrap;overflow:hidden}
 .ladder-foot{margin-top:16px;font-family:var(--body);font-size:.72rem;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
 .ladder-foot span{display:inline-flex;align-items:center;gap:6px}
@@ -167,6 +173,24 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .notebox.flag .nl{color:var(--amber)}
 .notebox p{font-size:.85rem;line-height:1.55}
 .notebox p+.nl{margin-top:14px}
+
+/* ---------- Payment tracker ---------- */
+.spark{width:100%;height:34px;display:block;margin:10px 0 14px;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+.pay-history{display:flex;flex-direction:column;gap:2px;margin-bottom:12px;font-family:var(--mono);font-size:.72rem}
+.pay-row{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr 1.2fr;gap:8px;padding:5px 4px;border-radius:4px}
+.pay-row:not(.pay-head):hover{background:var(--paper)}
+.pay-head{color:var(--muted-2);text-transform:uppercase;font-size:.6rem;letter-spacing:.06em;border-bottom:1px solid var(--line);padding-bottom:7px;margin-bottom:2px}
+.pay-empty{font-family:var(--body);font-size:.82rem;color:var(--muted);padding:4px 0 10px}
+.pay-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;padding-top:12px;border-top:1px solid var(--line)}
+.pay-form input{font-family:var(--body);font-size:.82rem;padding:8px 10px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface);color:var(--ink)}
+.pay-form input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-wash)}
+.pay-form input[name="paidOn"]{width:150px}
+.pay-form input[name="principal"],.pay-form input[name="interest"]{width:130px}
+.pay-form input[name="note"]{flex:1;min-width:140px}
+.pay-form button{font-family:var(--mono);font-size:.74rem;font-weight:500;padding:9px 14px;border-radius:7px;border:1px solid var(--green-deep);background:var(--green-deep);color:#fff;cursor:pointer;white-space:nowrap}
+.pay-form button:hover{background:var(--green)}
+.pay-form button:disabled{opacity:.6;cursor:default}
+.pay-error{font-family:var(--body);font-size:.76rem;color:var(--amber);flex-basis:100%}
 
 /* ---------- Edit / delete controls ---------- */
 .detail-actions{grid-column:1/-1;display:flex;gap:10px;margin-top:2px}
@@ -270,6 +294,7 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
       <div class="ladder-foot">
         <span><i class="dot" style="background:var(--green)"></i> Upcoming maturity</span>
         <span><i class="dot" style="background:var(--amber)"></i> Past maturity date — confirm status</span>
+        <span>Click a bar to filter the loans below to that year</span>
       </div>
     </div>
     <div class="card">
@@ -423,12 +448,20 @@ function computeKpis(){
 }
 
 /* ---------- Maturity ladder ---------- */
+// Bucket key a loan's maturity falls into on the ladder — shared by the
+// chart builder and the row filter so clicking a bar and reading the chart
+// always agree on what "in that bucket" means.
+function ladderKey(l){
+  if(!l.maturity)return 'none';
+  const y=yearOf(l.maturity);
+  return y<=2025?'≤2025':(y>=2035?'2035+':String(y));
+}
 function buildLadder(){
   const buckets={};
   LOANS.forEach(l=>{
     if(!l.maturity)return;
-    let y=yearOf(l.maturity);
-    let key = y<=2025?'≤2025':(y>=2035?'2035+':String(y));
+    const key=ladderKey(l);
+    const y=yearOf(l.maturity);
     buckets[key]=buckets[key]||{amt:0,cnt:0,past:false,sortY:y};
     if(isNum(l.balance))buckets[key].amt+=l.balance;
     buckets[key].cnt++;
@@ -442,17 +475,26 @@ function buildLadder(){
   const noMat=LOANS.filter(l=>!l.maturity).length;
   $('#ladder').innerHTML=order.map(k=>{
     const b=buckets[k];
-    const past=b.past && (k==='≤2025' || +k < TODAY.getFullYear() || (+k===TODAY.getFullYear()));
     const isPast = k==='≤2025';
     const w=Math.max((b.amt/max)*100, b.amt>0?4:0);
-    return `<div class="rung"><div class="yr ${isPast?'past':''}">${k}</div>
+    const sel=state.ladder===k;
+    const titleTxt=k==='2035+'?'2035 or later':(k==='≤2025'?'2025 or earlier':k);
+    return `<div class="rung ${sel?'sel':''}" data-ladder="${esc(k)}" title="Show loans maturing ${titleTxt}"><div class="yr ${isPast?'past':''}">${k}</div>
       <div class="track"><div class="fill ${isPast?'past':''}" data-w="${w}"><span class="cnt">${b.cnt} loan${b.cnt>1?'s':''}</span></div></div>
       <div class="amt">${b.amt>0?abbr(b.amt):'—'}</div></div>`;
-  }).join('') + (noMat?`<div class="rung"><div class="yr" style="color:var(--muted-2)">n/a</div><div class="track" style="background:repeating-linear-gradient(45deg,var(--paper),var(--paper) 5px,#eceeea 5px,#eceeea 10px)"></div><div class="amt">${noMat} loan${noMat>1?'s':''}</div></div>`:'');
+  }).join('') + (noMat?`<div class="rung ${state.ladder==='none'?'sel':''}" data-ladder="none" title="Show loans with no maturity date on file"><div class="yr" style="color:var(--muted-2)">n/a</div><div class="track" style="background:repeating-linear-gradient(45deg,var(--paper),var(--paper) 5px,#eceeea 5px,#eceeea 10px)"></div><div class="amt">${noMat} loan${noMat>1?'s':''}</div></div>`:'');
   // animate fills
   requestAnimationFrame(()=>{setTimeout(()=>{
     $('#ladder').querySelectorAll('.fill').forEach(f=>{f.style.width=f.dataset.w+'%';const c=f.querySelector('.cnt');if(c&&f.offsetWidth>58)c.style.opacity=1;});
   },80);});
+  $('#ladder').querySelectorAll('[data-ladder]').forEach(r=>r.addEventListener('click',()=>{
+    const key=r.dataset.ladder;
+    state.ladder = state.ladder===key?null:key;
+    // clear other filters for a clean view, same as clicking a "needs attention" item
+    state.attn=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+    syncChips();buildLadder();render();
+    document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
+  }));
 }
 // nicer money abbreviation for ladder
 function abbr(n){if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?1:2)+'M';if(n>=1e3)return '$'+Math.round(n/1e3)+'K';return money(n);}
@@ -474,14 +516,14 @@ function buildAttn(){
   $('#attn').querySelectorAll('[data-attn]').forEach(a=>a.addEventListener('click',()=>{
     state.attn = state.attn===a.dataset.attn?null:a.dataset.attn;
     // clear other filters for a clean view
-    state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
-    syncChips();render();
+    state.ladder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+    syncChips();buildLadder();render();
     document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
   }));
 }
 
 /* ---------- Filters state ---------- */
-const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,open:new Set()};
+const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,ladder:null,open:new Set()};
 const ATTN_TEST={
   verify:l=>l._statusBucket==='verify',
   flag:l=>l._flag,
@@ -509,7 +551,12 @@ function buildChips(){
   document.querySelectorAll('[data-cat]').forEach(c=>c.addEventListener('click',()=>toggle(state.cat,c.dataset.cat,c)));
   document.querySelectorAll('[data-lender]').forEach(c=>c.addEventListener('click',()=>toggle(state.lender,c.dataset.lender,c)));
 }
-function toggle(set,key,el){state.attn=null;if(set.has(key)){set.delete(key);el.classList.remove('on');}else{set.add(key);el.classList.add('on');}render();}
+function toggle(set,key,el){
+  state.attn=null;
+  if(state.ladder){state.ladder=null;buildLadder();}
+  if(set.has(key)){set.delete(key);el.classList.remove('on');}else{set.add(key);el.classList.add('on');}
+  render();
+}
 function syncChips(){
   document.querySelectorAll('[data-status]').forEach(c=>c.classList.toggle('on',state.status.has(c.dataset.status)));
   document.querySelectorAll('[data-cat]').forEach(c=>c.classList.toggle('on',state.cat.has(c.dataset.cat)));
@@ -520,6 +567,7 @@ function syncChips(){
 function filtered(){
   let out=LOANS.filter(l=>{
     if(state.attn && !ATTN_TEST[state.attn](l))return false;
+    if(state.ladder && ladderKey(l)!==state.ladder)return false;
     if(state.status.size && !state.status.has(l._statusBucket))return false;
     if(state.cat.size && !state.cat.has(l.category))return false;
     if(state.lender.size && !state.lender.has(l._lender))return false;
@@ -616,12 +664,125 @@ function detailHTML(l){
         ${field('Category',l.category?esc(l.category):null,{txt:1})}
       </div>
       ${notes?`<div style="grid-column:1/-1">${notes}</div>`:''}
+      <div style="grid-column:1/-1">${paymentsBoxHTML(l)}</div>
     </div>
     <div class="detail-actions">
       <button class="btn-edit" type="button" data-edit="${l.id}">Edit loan</button>
       <button class="btn-delete" type="button" data-delete="${l.id}">Delete loan</button>
     </div>
   </div>`;
+}
+
+/* ---------- Payment tracker ----------
+   A loan's balance is normally refreshed by re-importing a spreadsheet.
+   This lets Tiffany just type in a principal/interest split for a payment;
+   the principal is deducted from the loan's balance immediately and the
+   payment is kept in a running history with a small balance-over-time
+   tracker, so the database stays current without a re-upload. */
+function paymentsBoxHTML(l){
+  const body = l._payments ? renderPaymentsBody(l) : `<p class="pay-empty">Loading payment history…</p>`;
+  return `<div class="notebox">
+    <div class="nl">Payment tracker <span style="opacity:.65">— log a principal/interest payment and the balance updates automatically</span></div>
+    <div id="pay-body-${l.id}">${body}</div>
+  </div>`;
+}
+
+function buildSparkline(l){
+  const pts=[];
+  if(isNum(l.orig))pts.push(l.orig);
+  (l._payments||[]).forEach(p=>{if(isNum(p.balanceAfter))pts.push(p.balanceAfter);});
+  if(isNum(l.balance) && pts[pts.length-1]!==l.balance)pts.push(l.balance);
+  if(pts.length<2)return '';
+  const max=Math.max(...pts), min=Math.min(...pts);
+  const w=300,h=34,pad=3;
+  const xs=pts.map((_,i)=>pad+(i/(pts.length-1))*(w-pad*2));
+  const ys=pts.map(v=>max===min?h/2:pad+(1-(v-min)/(max-min))*(h-pad*2));
+  const poly=xs.map((x,i)=>`${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ');
+  const lastX=xs[xs.length-1], lastY=ys[ys.length-1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <polyline points="${poly}" fill="none" stroke="var(--green-deep)" stroke-width="1.8" vector-effect="non-scaling-stroke"/>
+    <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.6" fill="var(--green-deep)"/>
+  </svg>`;
+}
+
+function renderPaymentsBody(l){
+  const payments=l._payments||[];
+  const rowsHtml = payments.length
+    ? payments.slice().reverse().map(p=>`<div class="pay-row">
+        <span>${fmtDate(p.paidOn)}</span>
+        <span>${money(p.principal,true)}</span>
+        <span>${money(p.interest,true)}</span>
+        <span>${money(p.principal+p.interest,true)}</span>
+        <span>${isNum(p.balanceAfter)?money(p.balanceAfter,true):'<span class="na">—</span>'}</span>
+      </div>`).join('')
+    : `<p class="pay-empty">No payments recorded yet — the first one below establishes the tracker.</p>`;
+  return `${buildSparkline(l)}
+    <div class="pay-history">
+      ${payments.length?`<div class="pay-row pay-head"><span>Date</span><span>Principal</span><span>Interest</span><span>Total</span><span>Balance after</span></div>`:''}
+      ${rowsHtml}
+    </div>
+    <form class="pay-form" data-loan="${l.id}">
+      <input type="date" name="paidOn" required value="${new Date().toISOString().slice(0,10)}">
+      <input type="number" name="principal" step="0.01" min="0" placeholder="Principal $">
+      <input type="number" name="interest" step="0.01" min="0" placeholder="Interest $">
+      <input type="text" name="note" placeholder="Note (optional)">
+      <button type="submit">Record payment</button>
+      <span class="pay-error"></span>
+    </form>`;
+}
+
+async function loadPayments(l){
+  const bodyEl=document.getElementById(`pay-body-${l.id}`);
+  if(!bodyEl)return;
+  try{
+    l._payments=await apiRequest(`/api/loans/${l.id}/payments`);
+  }catch(err){
+    bodyEl.innerHTML=`<p class="pay-empty" style="color:var(--amber)">Couldn't load payment history: ${esc(err.message)}</p>`;
+    return;
+  }
+  bodyEl.innerHTML=renderPaymentsBody(l);
+  wirePaymentForm(l);
+  const det=bodyEl.closest('.detail');
+  if(det)det.style.maxHeight=det.scrollHeight+80+'px';
+}
+
+function wirePaymentForm(l){
+  const form=document.querySelector(`.pay-form[data-loan="${l.id}"]`);
+  if(!form)return;
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const fd=new FormData(form);
+    const paidOn=fd.get('paidOn');
+    const principal=Number(fd.get('principal'))||0;
+    const interest=Number(fd.get('interest'))||0;
+    const note=String(fd.get('note')||'').trim();
+    const errEl=form.querySelector('.pay-error');
+    errEl.textContent='';
+    if(!paidOn){errEl.textContent='Date is required.';return;}
+    if(!principal&&!interest){errEl.textContent='Enter a principal or interest amount.';return;}
+    const btn=form.querySelector('button');
+    btn.disabled=true;
+    try{
+      const result=await apiRequest(`/api/loans/${l.id}/payments`,{method:'POST',body:JSON.stringify({paidOn,principal,interest,note})});
+      const idx=LOANS.findIndex(x=>x.id===l.id);
+      const payments=[...(l._payments||[]),result.payment];
+      if(idx>=0){
+        LOANS[idx]={...LOANS[idx],...result.loan};
+        normalizeLoan(LOANS[idx]);
+        LOANS[idx]._payments=payments;
+      }
+      // refreshViews() re-renders the (still-open) row from the updated
+      // LOANS entry above, which re-wires this same form fresh — don't also
+      // wire it here, or the next submit would fire twice.
+      await refreshViews();
+      const det=document.getElementById(`pay-body-${l.id}`)?.closest('.detail');
+      if(det)det.style.maxHeight=det.scrollHeight+80+'px';
+    }catch(err){
+      errEl.textContent=err.message||'Failed to record payment.';
+    }finally{
+      btn.disabled=false;
+    }
+  });
 }
 
 function rowHTML(l){
@@ -664,10 +825,19 @@ function render(){
         state.open.delete(id);det.style.maxHeight='0';row.classList.remove('open');
         setTimeout(()=>{if(!state.open.has(id))det.innerHTML='';},300);
       }else{
-        state.open.add(id);det.innerHTML=detailHTML(LOANS.find(x=>x.id===id));row.classList.add('open');
+        const loan=LOANS.find(x=>x.id===id);
+        state.open.add(id);det.innerHTML=detailHTML(loan);row.classList.add('open');
         det.style.maxHeight=det.scrollHeight+80+'px';
+        if(loan._payments)wirePaymentForm(loan);else loadPayments(loan);
       }
     }));
+    // rows that were already open before this re-render (e.g. after a
+    // filter change) keep their expanded detail markup from rowHTML above —
+    // just re-wire (or (re)fetch) their payment tracker.
+    list.forEach(l=>{
+      if(!state.open.has(l.id))return;
+      if(l._payments)wirePaymentForm(l);else loadPayments(l);
+    });
   }
   const total=LOANS.length;
   let label=`Showing <b style="color:var(--ink);font-weight:600">${list.length}</b> of ${total} loans`;
@@ -675,8 +845,13 @@ function render(){
     const names={verify:'closed loans still showing a balance',flag:'loans with reconciliation flags',nodoc:'loans with no document on file',pastmat:'active loans past maturity'};
     label+=` · <span style="color:var(--amber)">${names[state.attn]}</span>`;
   }
+  if(state.ladder){
+    const ladderLabel=state.ladder==='none'?'loans with no maturity date on file'
+      :`loans maturing ${state.ladder==='≤2025'?'in 2025 or earlier':(state.ladder==='2035+'?'in 2035 or later':'in '+state.ladder)}`;
+    label+=` · <span style="color:var(--green-deep)">${ladderLabel}</span>`;
+  }
   $('#count').innerHTML=label;
-  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn;
+  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn||state.ladder;
   $('#clear').style.display=anyFilter?'inline':'none';
 }
 
@@ -831,7 +1006,7 @@ $('#loanForm').addEventListener('submit',async e=>{
     if(editingId){
       saved=await apiRequest(`/api/loans/${editingId}`,{method:'PUT',body:JSON.stringify(payload)});
       const idx=LOANS.findIndex(x=>x.id===editingId);
-      if(idx>=0)LOANS[idx]=saved;
+      if(idx>=0){saved._payments=LOANS[idx]._payments;LOANS[idx]=saved;}
     }else{
       saved=await apiRequest('/api/loans',{method:'POST',body:JSON.stringify(payload)});
       LOANS.push(saved);
@@ -847,11 +1022,15 @@ $('#loanForm').addEventListener('submit',async e=>{
 });
 
 /* ---------- wire up ---------- */
-$('#search').addEventListener('input',e=>{state.q=e.target.value.trim().toLowerCase();state.attn=null;render();});
+$('#search').addEventListener('input',e=>{
+  state.q=e.target.value.trim().toLowerCase();state.attn=null;
+  if(state.ladder){state.ladder=null;buildLadder();}
+  render();
+});
 $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
 $('#clear').addEventListener('click',()=>{
-  state.q='';state.status.clear();state.cat.clear();state.lender.clear();state.attn=null;
-  $('#search').value='';syncChips();render();
+  state.q='';state.status.clear();state.cat.clear();state.lender.clear();state.attn=null;state.ladder=null;
+  $('#search').value='';syncChips();buildLadder();render();
 });
 $('#exportBtn').addEventListener('click',exportToExcel);
 

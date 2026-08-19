@@ -43,6 +43,23 @@ async function main() {
       );
     `);
     console.log("✓ loans table is ready.");
+
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS loan_payments (
+        id SERIAL PRIMARY KEY,
+        loan_id INTEGER NOT NULL REFERENCES loans(id) ON DELETE CASCADE,
+        paid_on DATE NOT NULL,
+        principal NUMERIC NOT NULL DEFAULT 0,
+        interest NUMERIC NOT NULL DEFAULT 0,
+        note TEXT,
+        balance_after NUMERIC,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+      );
+    `);
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS loan_payments_loan_id_idx ON loan_payments (loan_id);
+    `);
+    console.log("✓ loan_payments table is ready.");
   } finally {
     await pool.end();
   }
