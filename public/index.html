@@ -327,6 +327,10 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
       Download Excel
     </button>
+    <button class="btn-export" id="syncBtn" type="button" title="Re-apply the spreadsheet data bundled in this deploy to the database">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-15.3 6.5M3 12a9 9 0 0 1 15.3-6.5"/><path d="M3 21v-5h5"/><path d="M21 3v5h-5"/></svg>
+      Sync from Spreadsheet
+    </button>
   </div>
   <div class="chips">
     <div class="chipgroup"><span class="glab">Status</span><div id="chips-status" class="chipgroup"></div></div>
@@ -1040,6 +1044,31 @@ $('#clear').addEventListener('click',()=>{
   $('#search').value='';syncChips();buildLadder();render();
 });
 $('#exportBtn').addEventListener('click',exportToExcel);
+$('#syncBtn').addEventListener('click',async()=>{
+  const ok=confirm(
+    'Re-apply the spreadsheet data bundled in this deploy to the database?\n\n'+
+    'This updates balances, statuses, and other fields for loans already on file, '+
+    'and adds any new loans from the spreadsheet. It will NOT delete any loan. '+
+    'For a loan with payments already recorded in its tracker, its balance is '+
+    'left alone (everything else about it still updates) so a payment already '+
+    'applied is never reset back to the spreadsheet figure.'
+  );
+  if(!ok)return;
+  const btn=$('#syncBtn');
+  btn.disabled=true;
+  try{
+    const result=await apiRequest('/api/loans/sync-from-seed',{method:'POST'});
+    await loadLoans();
+    await refreshViews();
+    let msg=`Synced from spreadsheet: ${result.updated} loan${result.updated===1?'':'s'} updated, ${result.inserted} added.`;
+    if(result.balancePreserved)msg+=`\n\n${result.balancePreserved} loan${result.balancePreserved===1?'':'s'} already had payments recorded, so ${result.balancePreserved===1?'its':'their'} balance was left as-is rather than reset to the spreadsheet figure.`;
+    alert(msg);
+  }catch(err){
+    alert('Sync failed: '+err.message);
+  }finally{
+    btn.disabled=false;
+  }
+});
 
 async function init(){
   try{
