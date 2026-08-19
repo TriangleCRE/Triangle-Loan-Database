@@ -15,7 +15,7 @@ const {
   isValidSessionCookie,
   parseCookies,
 } = require("./lib/auth");
-const { listLoans, createLoan, updateLoan, deleteLoan } = require("./lib/loans");
+const { listLoans, createLoan, updateLoan, deleteLoan, syncFromSeed } = require("./lib/loans");
 const { listPayments, recordPayment, deleteLatestPayment } = require("./lib/payments");
 
 const app = express();
@@ -220,6 +220,19 @@ app.post("/api/loans", async (req, res, next) => {
   try {
     const loan = await createLoan(req.body || {});
     res.status(201).json(loan);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Re-applies the data/loans.seed.json bundled in this deploy to the live
+// database — the "Sync from Spreadsheet" button's endpoint. See
+// lib/loans.js's syncFromSeed() for exactly what this does and doesn't
+// touch. Sits behind the same session gate as everything else here.
+app.post("/api/loans/sync-from-seed", async (req, res, next) => {
+  try {
+    const result = await syncFromSeed();
+    res.json(result);
   } catch (err) {
     next(err);
   }
