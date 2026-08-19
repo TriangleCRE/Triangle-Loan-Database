@@ -400,8 +400,8 @@ function normalizeLoan(l){
   if(l.property && l.property.trim()){
     l._name = l.property.trim();
   }else{
-    const co=(l.company||'').trim(), le=(l._lender||'').trim();
-    l._name = (l.category==='Due to/Due From'?'Due to / from':'Note')+(co?' — '+co:'')+(le&&le!==co?' · '+le:'');
+    const co=(l.company||'').trim(), le=(l._lender||'').trim(), grp=(l.group||'').trim();
+    l._name = (l.category==='Due to/Due From'?'Due to / from':'Note')+(co?' — '+co:'')+(grp?' ('+grp+')':'')+(le&&le!==co?' · '+le:'');
     l._intercompany = true;
   }
   return l;
@@ -576,7 +576,7 @@ function filtered(){
     if(state.cat.size && !state.cat.has(l.category))return false;
     if(state.lender.size && !state.lender.has(l._lender))return false;
     if(state.q){
-      const hay=[l._name,l.address,l._lender,l.company,l.town,l.account,l.contact,l.loanType,l.notes].join(' ').toLowerCase();
+      const hay=[l._name,l.address,l._lender,l.company,l.group,l.town,l.account,l.contact,l.loanType,l.notes].join(' ').toLowerCase();
       if(!hay.includes(state.q))return false;
     }
     return true;
@@ -615,6 +615,7 @@ function detailHTML(l){
     field('Address',l.address?esc(l.address):null,{txt:1}),
     field('Town',l.town?esc(l.town):null,{txt:1}),
     field('Owning company',l.company?esc(l.company):null,{txt:1}),
+    field('Parent group / entity',l.group?esc(l.group):null,{txt:1}),
     field('Account #',l.account?esc(l.account):null),
     field('Yardi property ID',l.yardiId?esc(l.yardiId):null)
   ].join('');
@@ -807,7 +808,7 @@ function rowHTML(l){
       </div>
       <div class="lend">
         ${l._lender?esc(l._lender):'<span class="na">—</span>'}
-        <div class="co">${l.company?esc(l.company):'—'}</div>
+        <div class="co">${l.company?esc(l.company)+(l.group?' ('+esc(l.group)+')':''):'—'}</div>
       </div>
       <div class="rate">${rate??'<span class="na">—</span>'}</div>
       <div class="mat ${matSoon||matPast?'soon':''}">${matTxt}</div>
@@ -868,6 +869,7 @@ function exportToExcel(){
     'Address':l.address||'',
     'Town':l.town||'',
     'Owning company':l.company||'',
+    'Parent group / entity':l.group||'',
     'Category':l.category||'',
     'Status':l.status||'',
     'Lender':l._lender||'',
@@ -918,6 +920,7 @@ const FIELD_DEFS=[
   {key:'address',label:'Address',type:'text'},
   {key:'town',label:'Town',type:'text'},
   {key:'company',label:'Owning company',type:'text'},
+  {key:'group',label:'Parent group / entity',type:'text'},
   {key:'category',label:'Category',type:'text'},
   {key:'status',label:'Status',type:'text'},
   {key:'lender',label:'Lender',type:'text'},
