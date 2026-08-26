@@ -88,7 +88,17 @@
     "flags": "Property SOLD but file still shows balance $1,424,767 \u2013 confirm loan paid off at sale; Removed from master 8/19/26 (property sold); balance shown is last-known 7/7",
     "id": 3,
     "notes": 0,
-    "group": "MTAP"
+    "group": "MTAP",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1S258Qwu4VpV2Btan81THn0vW9ptzBXI2/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/1n96cDs1Wbr6xloFUhx8I5vpfgSepBCD9/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -117,7 +127,17 @@
     "source": "Jeryl master (7/7/26) \u2013 removed 8/19 (sold)",
     "flags": "Maturity differs (Jeryl 2020-10-15 / Ben 2026-02-15); Orig amt differs (Jeryl $960,000 / Ben $1,488,443); Property SOLD but file still shows balance $1,199,480 \u2013 confirm loan paid off at sale; Removed from master 8/19/26 (property sold); balance shown is last-known 7/7",
     "id": 4,
-    "group": "MTAP"
+    "group": "MTAP",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1uKKGnWzCif1dC4SpXSOGr4k2mz1eJvNd/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/17rYk6CgFHU5LNAMr5fkn4uddJoPEFW_t/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -147,7 +167,17 @@
     "flags": "Maturity differs (Jeryl 2020-10-21 / Ben 2026-02-15); Orig amt differs (Jeryl $2,010,760 / Ben $2,942,606)",
     "id": 5,
     "yardiId": "p0000044",
-    "group": "MTAP"
+    "group": "MTAP",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/100uNZBDmWMqMF92uaP_8gEvFL7iKYlo5/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/1AcO1a9ODj9c2EZPzjO7CCj-R56tsl7VH/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -328,7 +358,13 @@
     "flags": "Orig amt differs (Jeryl $4,400,000 / Ben $3,500,000)",
     "id": 11,
     "yardiId": "p0000084",
-    "group": "TAP"
+    "group": "TAP",
+    "documents": [
+      {
+        "label": "Approval Letter (Jul 2026)",
+        "url": "https://drive.google.com/file/d/1UNT1rt7-60YO6b4zXanjyQ0MYb-RNP0_/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -377,7 +413,17 @@
     "address": "1100 Greenville Ave, Staunton, VA 24401",
     "town": "Staunton",
     "notes": "Note to CDFW",
-    "group": "DDC PHW"
+    "group": "DDC PHW",
+    "documents": [
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/1R9Cc9hHQ1NbUAid7vB4ebl4eUFuP6BA_/view"
+      },
+      {
+        "label": "Amort Schedule",
+        "url": "https://drive.google.com/file/d/1J0DE-ztZ4DU5HezmMts3IQBds92na2Ln/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -394,7 +440,13 @@
     "address": "1100 Greenville Ave, Staunton, VA 24401",
     "town": "Staunton",
     "notes": "Due to CDFW",
-    "group": "DDC PHW"
+    "group": "DDC PHW",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/18quR79_fMZtXBU07IwZ7EhGMcUNVraKO/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -413,7 +465,13 @@
     "yardiId": "p0000105",
     "address": "2815-2817 N Augusta St., Staunton, VA 24401",
     "town": "Staunton",
-    "group": "DWG"
+    "group": "DWG",
+    "documents": [
+      {
+        "label": "Heritage Hospitality Mgmt",
+        "url": "https://drive.google.com/file/d/1iIQ_z3kgEMAVelW-0BOUgVlv97gNQ79H/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -444,7 +502,17 @@
     "flags": "Orig amt differs (Jeryl $850,000 / Ben $816,000)",
     "id": 16,
     "yardiId": "p0000035",
-    "group": "MDW"
+    "group": "MDW",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1hlEAT1nSlIzFqx_VCJiHh0YCLGY4ZTw_/view"
+      },
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/1jn6pwEVqlS83r_p0zHaaVhT1ZQN5XEqz/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -461,7 +529,13 @@
     "address": "729 Richmond Ave, Staunton, VA 24401",
     "town": "Staunton",
     "notes": "Due to CDFW",
-    "group": "MDW"
+    "group": "MDW",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1kCcpqiAe7T41qZNBPTgOW7QeE0Xap-UH/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -516,7 +590,17 @@
     "source": "Jeryl master (8/19/26)",
     "id": 19,
     "yardiId": "p0000104",
-    "group": "PTAP"
+    "group": "PTAP",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1c4QjXyJBxIhseHn0NyvR8BguHhBCOpKf/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/1P9rwg2KGvN9kXF32F8aaxytFRlHnm4vf/view"
+      }
+    ]
   },
   {
     "category": "CDFW Note",
@@ -537,7 +621,13 @@
     "id": 20,
     "notes": "Note-Paid off w/loan from CDFW Feb 2016",
     "flags": "Address: \"Grove Property\" not found in property list \u2013 verify",
-    "group": "S8-Pete"
+    "group": "S8-Pete",
+    "documents": [
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/101HyQy0k-xEVRfGrFqpwD1KpX7IR3tBb/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -552,7 +642,13 @@
     "id": 21,
     "notes": "Due to CDFW",
     "flags": "Address: Eiland is a multi-parcel assemblage (1001-1012 Richmond Ave / Alta St / Bell St, Staunton) \u2013 no single address",
-    "group": "S8-Pete"
+    "group": "S8-Pete",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1soO-59cJXeZSMnPS8bu9seq1drNn72E4/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -569,7 +665,25 @@
     "id": 22,
     "address": "102 Crossing Way, Staunton, VA",
     "town": "Staunton",
-    "group": "Staunton Crossing"
+    "group": "Staunton Crossing",
+    "documents": [
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/1cETAL9MtB_54mUs7ZOW7TcZxNkyzgPEv/view"
+      },
+      {
+        "label": "Commitment Letter",
+        "url": "https://drive.google.com/file/d/1ihtjX7I_8U0SKtX-nedrhHae4-ug48Pj/view"
+      },
+      {
+        "label": "Renewal 09/2025",
+        "url": "https://drive.google.com/file/d/1Vh8IePz314z5YatM5xhGtQmR65hJS4w5/view"
+      },
+      {
+        "label": "Renewal 03/2026",
+        "url": "https://drive.google.com/file/d/1Ht4R0Spmp4ZZKrrlrcRpz73T6q7-2m7i/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -582,7 +696,13 @@
     "source": "Jeryl master (8/19/26)",
     "id": 23,
     "notes": "Asher has paid his portion of this amount due to CDFW.",
-    "group": "WDCB"
+    "group": "WDCB",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1Gr-PA4JFHkZ0abvUAXd9WzGLHlIYH58T/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -599,7 +719,13 @@
     "address": "0 Windigrove Dr., Waynesboro, VA 22980",
     "town": "Waynesboro",
     "notes": "Due to CDFW",
-    "group": "Waynesboro Place"
+    "group": "Waynesboro Place",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1WD-obUUZ7eN0izWGqweGBp9xViTqkILY/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -612,7 +738,13 @@
     "source": "Jeryl master (8/19/26)",
     "id": 25,
     "notes": "Due to CDFW",
-    "group": "BWDD"
+    "group": "BWDD",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/13vLP9-WkjR3cypnDBVwMCapyV2RkDy10/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -631,7 +763,17 @@
     "yardiId": "p0000170",
     "address": "143/153 Crown Drive, Danville, VA 24540",
     "town": "Danville",
-    "group": "Dville"
+    "group": "Dville",
+    "documents": [
+      {
+        "label": "CLA",
+        "url": "https://drive.google.com/file/d/1tsjjM7QsdM9C3XUjJKden30rI10vHl2Y/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/18c9sHyMPSu2MLHxBxIc-fRXbkF0kwncb/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -692,7 +834,13 @@
     "property": "1007-1011 Richmond Ave (McDonough)",
     "flags": "Review: property inferred from the 'DDC' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "DDC"
+    "group": "DDC",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1y-m9weGHbMo_25pdsyBN8-oZ1EGlcXUX/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -721,7 +869,17 @@
     "source": "Jeryl master (8/19/26)",
     "id": 30,
     "yardiId": "p0000027",
-    "group": "DDS"
+    "group": "DDS",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1lLH5Dw43GfIFwAoG0NXkqBXIKV2R1rN4/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/12cKbR4eJFrCpOAW4VT_dwsmsKcAMX4Gt/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -734,7 +892,13 @@
     "id": 31,
     "property": "808 Richmond Road",
     "flags": "Review: property inferred from the 'DDS' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
-    "group": "DDS"
+    "group": "DDS",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1Rk6n6pcL3bOmZphyJipuj8IOL55qBE1M/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -774,7 +938,17 @@
     "source": "Jeryl master (8/19/26)",
     "id": 33,
     "priorDetails": "Matruity date last pushed out on 2/6/2024",
-    "group": "Dahl Investments"
+    "group": "Dahl Investments",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1-ATuMBl3t4QfXZ1vph_8ek5LoagCw24N/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/1xA_aSR8eddqtusjr7OrsShtVXaZcYv4s/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -789,7 +963,13 @@
     "property": "$300,000 LOC",
     "flags": "Review: property inferred from the 'Dahl Investments' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "Dahl Investments"
+    "group": "Dahl Investments",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1GjViRHVeP6h6pv6J3q8mvoP8275jPHRe/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -888,7 +1068,13 @@
     "id": 38,
     "property": "42 Payne Lane",
     "flags": "Review: property inferred from the 'Payne Farm' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
-    "notes": "Due to CDFW"
+    "notes": "Due to CDFW",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1-vbCgoHH1hsrdM-eIJCmcD6B7BXASA5a/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -935,7 +1121,13 @@
     "property": "12.5 acres Hunter Ave + 45 acres Statler Blvd",
     "flags": "Review: property inferred from the 'GAE' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "GAE"
+    "group": "GAE",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1At8Y7CW8tsMjz0QkAysRKOluoMHHqkyT/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -964,7 +1156,17 @@
     "source": "Jeryl master (8/19/26)",
     "id": 41,
     "yardiId": "p0000036",
-    "group": "GAT"
+    "group": "GAT",
+    "documents": [
+      {
+        "label": "BLA",
+        "url": "https://drive.google.com/file/d/1QMucfR2imoC0rPUkUe0UlG0ybWelnRJb/view"
+      },
+      {
+        "label": "PN",
+        "url": "https://drive.google.com/file/d/1DbksLZZybyusqA-Glc4YlAVpIsa6IuGJ/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -979,7 +1181,13 @@
     "property": "49 & 61 Greenville Ave/Log Lot",
     "flags": "Review: property inferred from the 'GAT' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "GAT"
+    "group": "GAT",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1QLue2fbP-ccsBMkyB7jUw-IHFhBHAACU/view"
+      }
+    ]
   },
   {
     "category": "CDFW Note",
@@ -1002,7 +1210,13 @@
     "address": "42 Payne Lane, Staunton, VA 24401",
     "town": "Staunton",
     "notes": "Note-3/24/16 CDFW paid off BB&T loan",
-    "group": "Payne Farm"
+    "group": "Payne Farm",
+    "documents": [
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/1sKnYp846ry7r-cDyA9xP182YF4xskp8F/view"
+      }
+    ]
   },
   {
     "category": "CDFW Note",
@@ -1023,7 +1237,13 @@
     "id": 44,
     "notes": "Note-3/24/16 CDFW paid off BB&T loan",
     "flags": "Address: Old Greenville Rd parcel not matched to property list \u2013 verify",
-    "group": "Sunnyside"
+    "group": "Sunnyside",
+    "documents": [
+      {
+        "label": "Note",
+        "url": "https://drive.google.com/file/d/1I45Rdkox4cKX5WfxarTxIYlAhRM5UXAY/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -1038,7 +1258,13 @@
     "property": "Lot 3 Payne Farm Old Greenville Rd",
     "flags": "Review: property inferred from the 'Sunnyside' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "Sunnyside"
+    "group": "Sunnyside",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1Sx03dPJnSA3DxvB3jpMFd3YaqxdjEL7L/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -1051,7 +1277,13 @@
     "source": "Jeryl master (8/19/26)",
     "id": 46,
     "notes": "Due to CDFW",
-    "group": "Dahl Family"
+    "group": "Dahl Family",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1h6yGoGASKJ4C-KhEsWGZOY_WfElrbG2_/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -1064,7 +1296,13 @@
     "source": "Jeryl master (8/19/26)",
     "id": 47,
     "notes": "Due to CDFW",
-    "group": "TriOp"
+    "group": "TriOp",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1-8dgmjb_6YG3TV1Yvt0ZuIWCsYHTFgii/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -1090,7 +1328,13 @@
     "property": "Line of Credit",
     "flags": "Review: property inferred from the 'Triangle Services' group of loans in the Aug 2026 spreadsheet update (rows share a highlight color but this line itself lists no property) - verify.",
     "notes": "Due to CDFW",
-    "group": "Triangle Services"
+    "group": "Triangle Services",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1BCX0B1k4s836-qy289-tmzwyJge65KPv/view"
+      }
+    ]
   },
   {
     "category": "Bank Loan",
@@ -1428,7 +1672,13 @@
     "source": "Jeryl master (8/19/26)",
     "flags": "New line added from the Aug 2026 spreadsheet update (entity 'TPA'). Company inferred from the surrounding Dahl-Wray rows in the source - the Master tab left it blank - verify.",
     "id": 63,
-    "notes": "Due to CDFW"
+    "notes": "Due to CDFW",
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1uxLBnzfOZU_1XKiCTj9x73oQ5j-EAdEy/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
@@ -1440,7 +1690,13 @@
     "source": "Jeryl master (8/19/26)",
     "company": "Dahl",
     "group": "FPT",
-    "id": 64
+    "id": 64,
+    "documents": [
+      {
+        "label": "Intercompany LOC",
+        "url": "https://drive.google.com/file/d/1Wj3uPF1y0eAm10ij2AKMkikUxR61fcG3/view"
+      }
+    ]
   },
   {
     "category": "Due to/Due From",
