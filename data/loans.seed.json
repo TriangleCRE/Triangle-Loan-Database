@@ -59,7 +59,8 @@
     "flags": "Rate differs (Jeryl 5.750% / Ben 3.750%)",
     "id": 2,
     "yardiId": "p0000043",
-    "group": "MTAP"
+    "group": "MTAP",
+    "due": "2nd"
   },
   {
     "category": "Bank Loan",
@@ -395,7 +396,8 @@
     "flags": "Rate differs (Jeryl 7.340% / Ben 3.750%)",
     "id": 12,
     "yardiId": "p0000032",
-    "group": "DDC PHW"
+    "group": "DDC PHW",
+    "due": "1st"
   },
   {
     "category": "CDFW Note",
@@ -601,7 +603,8 @@
         "label": "PN",
         "url": "https://drive.google.com/file/d/1P9rwg2KGvN9kXF32F8aaxytFRlHnm4vf/view"
       }
-    ]
+    ],
+    "rateChange": "2026-02-07"
   },
   {
     "category": "CDFW Note",
@@ -775,7 +778,8 @@
         "url": "https://drive.google.com/file/d/18c9sHyMPSu2MLHxBxIc-fRXbkF0kwncb/view"
       }
     ],
-    "pmtM": "varied"
+    "pmtM": "varied",
+    "rateChange": "2025-12-12"
   },
   {
     "category": "Due to/Due From",
