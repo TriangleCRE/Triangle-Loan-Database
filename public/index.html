@@ -280,7 +280,7 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
       <a class="ttl" href="#" title="Back to overview" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">Loan Portfolio<span>Master Database</span></a>
     </div>
     <div class="asof">
-      <div>Working draft · <b>V1</b> · compiled 19 Aug 2026</div>
+      <div>Working draft · <b>V1</b> · <span id="lastUpdated">last updated —</span></div>
       <div>Balances per Jeryl master · <b id="asof-count">—</b> loans on file</div>
     </div>
   </div>
@@ -431,6 +431,21 @@ async function apiRequest(path, options={}){
 async function loadLoans(){
   LOANS = await apiRequest('/api/loans');
   LOANS.forEach(normalizeLoan);
+}
+
+// Keeps the header's "last updated" date current on its own - it reflects
+// the most recent time any loan was edited, synced from the spreadsheet, or
+// had a payment recorded, so nobody has to remember to hand-edit this text
+// in the HTML again.
+async function updateLastUpdated(){
+  try{
+    const {lastUpdated}=await apiRequest('/api/meta');
+    $('#lastUpdated').textContent = lastUpdated
+      ? 'last updated '+new Date(lastUpdated).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})
+      : 'no loans on file yet';
+  }catch{
+    $('#lastUpdated').textContent = 'last updated —';
+  }
 }
 
 /* ---------- KPIs ---------- */
@@ -984,6 +999,7 @@ function closeModal(){
 }
 async function refreshViews(){
   computeKpis();buildLadder();buildAttn();buildChips();syncChips();render();
+  updateLastUpdated();
 }
 async function deleteLoanById(id){
   if(!confirm('Delete this loan? This cannot be undone.'))return;
@@ -1096,6 +1112,7 @@ async function init(){
   buildAttn();
   buildChips();
   render();
+  updateLastUpdated();
 }
 init();
 </script>
