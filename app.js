@@ -15,7 +15,7 @@ const {
   isValidSessionCookie,
   parseCookies,
 } = require("./lib/auth");
-const { listLoans, createLoan, updateLoan, deleteLoan, syncFromSeed } = require("./lib/loans");
+const { listLoans, createLoan, updateLoan, deleteLoan, syncFromSeed, getLastUpdated } = require("./lib/loans");
 const { listPayments, recordPayment, deleteLatestPayment } = require("./lib/payments");
 
 const app = express();
@@ -220,6 +220,17 @@ app.post("/api/loans", async (req, res, next) => {
   try {
     const loan = await createLoan(req.body || {});
     res.status(201).json(loan);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Powers the header's "Last updated" date — the most recent time any loan
+// was touched (edited, synced from the spreadsheet, or had a payment
+// recorded), so that date never needs to be hand-edited in the HTML again.
+app.get("/api/meta", async (req, res, next) => {
+  try {
+    res.json({ lastUpdated: await getLastUpdated() });
   } catch (err) {
     next(err);
   }
