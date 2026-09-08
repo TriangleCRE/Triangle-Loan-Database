@@ -501,7 +501,7 @@
     "notes": "1/29/16 refi - pd off loan#437712558 & combined loans; current opened 1/26/2026",
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
-    "flags": "Orig amt differs (Jeryl $850,000 / Ben $816,000); Original-term maturity 1/26/2026 (dashboard shows 1/25/2026, off by a day); renewal document needed to confirm current maturity.",
+    "flags": "Orig amt differs (Jeryl $850,000 / Ben $816,000); Original-term maturity 1/26/2026 (dashboard shows 1/25/2026, off by a day); renewal in progress - Jeryl confirmed in person (9/8/26) that this loan is being renewed. Update the maturity/terms here once the signed renewal document is in Drive.",
     "id": 16,
     "yardiId": "p0000035",
     "group": "MDW",
@@ -886,7 +886,7 @@
         "url": "https://drive.google.com/file/d/12cKbR4eJFrCpOAW4VT_dwsmsKcAMX4Gt/view"
       }
     ],
-    "flags": "Original-term maturity 1/26/2026; renewal document needed."
+    "flags": "Original-term maturity 1/26/2026; renewal in progress - Jeryl confirmed in person (9/8/26) that this loan is being renewed. Update the maturity/terms here once the signed renewal document is in Drive."
   },
   {
     "category": "Due to/Due From",
