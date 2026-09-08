@@ -62,14 +62,15 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .kpi-spark{margin-top:12px;height:22px;display:flex;align-items:flex-end;gap:4px}
 .kpi-spark-bar{flex:1;min-width:5px;border-radius:2px 2px 0 0;background:var(--green);transition:opacity .15s}
 .kpi-spark-bar.past{background:var(--amber)}
-.kpi-spark.clickable{cursor:pointer}
-.kpi-spark.clickable:hover .kpi-spark-bar{opacity:.7}
+.kpi-clickable{cursor:pointer;transition:background .15s}
+.kpi-clickable:hover{background:var(--green-wash)}
+.kpi-clickable:hover .kpi-spark-bar{opacity:.85}
 
 /* ---------- Ladder ---------- */
 .panels{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;margin-top:20px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px 24px}
 .card h3{font-family:var(--disp);font-weight:600;font-size:1rem;letter-spacing:-.01em;display:flex;align-items:baseline;justify-content:space-between}
-.card h3 .note{font-family:var(--mono);font-size:.64rem;font-weight:400;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.card h3 .note,.modal-head h3 .note{font-family:var(--mono);font-size:.64rem;font-weight:400;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
 .ladder{margin-top:20px;display:flex;flex-direction:column;gap:11px}
 .rung{display:grid;grid-template-columns:52px 1fr 44px;align-items:center;gap:12px;cursor:pointer;border-radius:6px;padding:3px 4px;margin:0 -4px;transition:background .15s}
 .rung:hover{background:var(--green-wash)}
@@ -215,7 +216,7 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .modal-overlay{position:fixed;inset:0;background:rgba(28,33,30,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 20px;z-index:100;overflow-y:auto}
 .modal{background:var(--surface);border-radius:14px;max-width:720px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
-.modal-head h3{font-family:var(--disp);font-size:1.05rem;font-weight:700}
+.modal-head h3{font-family:var(--disp);font-size:1.05rem;font-weight:700;display:flex;align-items:baseline;gap:10px}
 .modal-close{background:none;border:none;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px}
 .modal-close:hover{color:var(--ink)}
 .mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 18px;padding:22px 24px;max-height:60vh;overflow-y:auto}
@@ -231,6 +232,9 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .btn-save:hover{background:var(--green)}
 .btn-save:disabled{opacity:.6;cursor:default}
 @media(max-width:640px){.mgrid{grid-template-columns:1fr}}
+.rate-modal-body{padding:22px 24px}
+.rate-modal-intro{font-family:var(--body);font-size:.82rem;color:var(--muted);line-height:1.5;margin:0 0 20px}
+.rate-modal-body .ladder{margin-top:0}
 
 .empty-state{text-align:center;padding:70px 20px;color:var(--muted)}
 .empty-state .tri{width:0;height:0;border-left:16px solid var(--line-strong);border-top:11px solid transparent;border-bottom:11px solid transparent;margin:0 auto 18px;transform:rotate(90deg)}
@@ -385,6 +389,24 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
   </div>
 </div>
 
+<div class="modal-overlay" id="rateModalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Rate changes <span class="note">by year · current balance</span></h3>
+      <button class="modal-close" id="rateModalClose" type="button" aria-label="Close">&times;</button>
+    </div>
+    <div class="rate-modal-body">
+      <p class="rate-modal-intro">Active loans whose interest rate is set to adjust, reset, or come up for review, grouped by the year it's due. A year at or before this one means that loan's rate change date has already passed and hasn't been confirmed as resolved - click a bar to filter the loan list below to just those loans.</p>
+      <div class="ladder" id="rateModalLadder"></div>
+      <div class="ladder-foot">
+        <span><i class="dot" style="background:var(--green)"></i> Upcoming rate change</span>
+        <span><i class="dot" style="background:var(--amber)"></i> Rate change due this year or earlier</span>
+        <span>Click a bar to filter the loans below to that year</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="vendor/xlsx.mini.min.js"></script>
 <script>
 let LOANS = [];
@@ -484,18 +506,17 @@ function computeKpis(){
       sub:nextMat?esc(nextMat._name):'—'},
     {lab:'Rate changes',val:rateWatch.length||'—',
       sub:rateWatch.length?`<b style="color:${rateOverdue.length?'var(--amber)':'var(--green-deep)'}">${rateOverdue.length}</b> past due · ${rateUpcoming} upcoming`:'No adjustable-rate resets on file',
-      spark:rateWatch.length?{clickable:rateOverdue.length>0,bars:rateYears.map(y=>({
+      id:rateWatch.length?'rateKpiTile':null,
+      spark:rateWatch.length?{bars:rateYears.map(y=>({
         y,n:rateByYear[y],past:y<=TODAY.getFullYear(),
         pct:Math.max(rateByYear[y]/rateMaxCount*100,14)
       }))}:null}
   ];
   $('#kpis').innerHTML=kpis.map(k=>
-    `<div class="kpi"><div class="lab">${k.lab}</div><div class="val">${k.val??'—'}</div><div class="sub">${k.sub}</div>`+
-    (k.spark?`<div class="kpi-spark${k.spark.clickable?' clickable':''}"${k.spark.clickable?' data-attn="ratechg"':''} title="${k.spark.clickable?'Click to see the loans with a rate change past due':'Rate changes by year'}">`+
-      k.spark.bars.map(b=>`<div class="kpi-spark-bar ${b.past?'past':''}" style="height:${b.pct}%" title="${b.y}: ${b.n} loan${b.n>1?'s':''}"></div>`).join('')+
-      `</div>`:'')+
+    `<div class="kpi${k.id?' kpi-clickable':''}"${k.id?` id="${k.id}" title="Click for the full breakdown"`:''}><div class="lab">${k.lab}</div><div class="val">${k.val??'—'}</div><div class="sub">${k.sub}</div>`+
+    (k.spark?`<div class="kpi-spark">${k.spark.bars.map(b=>`<div class="kpi-spark-bar ${b.past?'past':''}" style="height:${b.pct}%" title="${b.y}: ${b.n} loan${b.n>1?'s':''}"></div>`).join('')}</div>`:'')+
     `</div>`).join('');
-  document.querySelectorAll('#kpis .kpi-spark.clickable').forEach(el=>el.addEventListener('click',()=>applyAttnFilter(el.dataset.attn)));
+  if($('#rateKpiTile'))$('#rateKpiTile').addEventListener('click',openRateModal);
   $('#asof-count').textContent=LOANS.length;
 }
 
@@ -543,13 +564,65 @@ function buildLadder(){
     const key=r.dataset.ladder;
     state.ladder = state.ladder===key?null:key;
     // clear other filters for a clean view, same as clicking a "needs attention" item
-    state.attn=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+    state.attn=null;state.rateLadder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
     syncChips();buildLadder();render();
     document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
   }));
 }
 // nicer money abbreviation for ladder
 function abbr(n){if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?1:2)+'M';if(n>=1e3)return '$'+Math.round(n/1e3)+'K';return money(n);}
+
+/* ---------- Rate change detail (pop-up from the "Rate changes" KPI tile) ---------- */
+// Only active loans count here - closed ones' rate changes aren't
+// operationally relevant, and the KPI tile this expands from is
+// active-only too, so the detail view should never show a bigger/
+// different set of loans than the tile promised.
+function rateChangeKey(l){
+  if(l._statusBucket!=='active')return null;
+  if(!l.rateChange)return 'none';
+  return String(yearOf(l.rateChange));
+}
+function buildRateModalLadder(){
+  const buckets={};
+  LOANS.forEach(l=>{
+    const key=rateChangeKey(l);
+    if(key===null)return;
+    buckets[key]=buckets[key]||{amt:0,cnt:0};
+    if(isNum(l.balance))buckets[key].amt+=l.balance;
+    buckets[key].cnt++;
+  });
+  const order=Object.keys(buckets).filter(k=>k!=='none').sort((a,b)=>+a-+b);
+  const max=Math.max(...order.map(k=>buckets[k].amt),1);
+  const noRate=buckets['none']?buckets['none'].cnt:0;
+  $('#rateModalLadder').innerHTML=order.map(k=>{
+    const b=buckets[k];
+    const isPast=+k<=TODAY.getFullYear();
+    const w=Math.max((b.amt/max)*100, b.amt>0?4:0);
+    const sel=state.rateLadder===k;
+    return `<div class="rung ${sel?'sel':''}" data-ratel="${esc(k)}" title="Show active loans with a rate change due in ${k}"><div class="yr ${isPast?'past':''}">${k}</div>
+      <div class="track"><div class="fill ${isPast?'past':''}" data-w="${w}"><span class="cnt">${b.cnt} loan${b.cnt>1?'s':''}</span></div></div>
+      <div class="amt">${b.amt>0?abbr(b.amt):'—'}</div></div>`;
+  }).join('') + (noRate?`<div class="rung ${state.rateLadder==='none'?'sel':''}" data-ratel="none" title="Show active loans with no rate-change date on file"><div class="yr" style="color:var(--muted-2)">n/a</div><div class="track" style="background:repeating-linear-gradient(45deg,var(--paper),var(--paper) 5px,#eceeea 5px,#eceeea 10px)"></div><div class="amt">${noRate} loan${noRate>1?'s':''}</div></div>`:'');
+  requestAnimationFrame(()=>{setTimeout(()=>{
+    $('#rateModalLadder').querySelectorAll('.fill').forEach(f=>{f.style.width=f.dataset.w+'%';const c=f.querySelector('.cnt');if(c&&f.offsetWidth>58)c.style.opacity=1;});
+  },80);});
+  $('#rateModalLadder').querySelectorAll('[data-ratel]').forEach(r=>r.addEventListener('click',()=>{
+    const key=r.dataset.ratel;
+    state.rateLadder = state.rateLadder===key?null:key;
+    // clear other filters for a clean view, same as clicking the maturity ladder or a "needs attention" item
+    state.attn=null;state.ladder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+    syncChips();buildLadder();render();
+    closeRateModal();
+    document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
+  }));
+}
+function openRateModal(){
+  buildRateModalLadder();
+  $('#rateModalOverlay').style.display='flex';
+}
+function closeRateModal(){
+  $('#rateModalOverlay').style.display='none';
+}
 
 /* ---------- Attention ---------- */
 // Shared by the Needs-attention list and the "Rate changes" KPI tile's
@@ -558,7 +631,7 @@ function abbr(n){if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?1:2)+'M';if(n>=1e3)
 function applyAttnFilter(key){
   state.attn = state.attn===key?null:key;
   // clear other filters for a clean view
-  state.ladder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+  state.ladder=null;state.rateLadder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
   syncChips();buildLadder();render();
   document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -580,7 +653,7 @@ function buildAttn(){
 }
 
 /* ---------- Filters state ---------- */
-const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,ladder:null,open:new Set()};
+const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,ladder:null,rateLadder:null,open:new Set()};
 const ATTN_TEST={
   verify:l=>l._statusBucket==='verify',
   flag:l=>l._flag,
@@ -612,6 +685,7 @@ function buildChips(){
 function toggle(set,key,el){
   state.attn=null;
   if(state.ladder){state.ladder=null;buildLadder();}
+  state.rateLadder=null;
   if(set.has(key)){set.delete(key);el.classList.remove('on');}else{set.add(key);el.classList.add('on');}
   render();
 }
@@ -626,6 +700,7 @@ function filtered(){
   let out=LOANS.filter(l=>{
     if(state.attn && !ATTN_TEST[state.attn](l))return false;
     if(state.ladder && ladderKey(l)!==state.ladder)return false;
+    if(state.rateLadder && rateChangeKey(l)!==state.rateLadder)return false;
     if(state.status.size && !state.status.has(l._statusBucket))return false;
     if(state.cat.size && !state.cat.has(l.category))return false;
     if(state.lender.size && !state.lender.has(l._lender))return false;
@@ -924,8 +999,13 @@ function render(){
       :`loans maturing ${state.ladder==='≤2025'?'in 2025 or earlier':(state.ladder==='2035+'?'in 2035 or later':'in '+state.ladder)}`;
     label+=` · <span style="color:var(--green-deep)">${ladderLabel}</span>`;
   }
+  if(state.rateLadder){
+    const rateLabel=state.rateLadder==='none'?'active loans with no rate-change date on file'
+      :`active loans with a rate change due in ${state.rateLadder}`;
+    label+=` · <span style="color:var(--green-deep)">${rateLabel}</span>`;
+  }
   $('#count').innerHTML=label;
-  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn||state.ladder;
+  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn||state.ladder||state.rateLadder;
   $('#clear').style.display=anyFilter?'inline':'none';
 }
 
@@ -1063,6 +1143,8 @@ $('#addBtn').addEventListener('click',()=>openModal(null));
 $('#modalClose').addEventListener('click',closeModal);
 $('#modalCancel').addEventListener('click',closeModal);
 $('#modalOverlay').addEventListener('click',e=>{if(e.target===$('#modalOverlay'))closeModal();});
+$('#rateModalClose').addEventListener('click',closeRateModal);
+$('#rateModalOverlay').addEventListener('click',e=>{if(e.target===$('#rateModalOverlay'))closeRateModal();});
 $('#rows').addEventListener('click',e=>{
   const editBtn=e.target.closest('[data-edit]');
   if(editBtn){e.stopPropagation();openModal(LOANS.find(l=>l.id===+editBtn.dataset.edit));return;}
@@ -1108,11 +1190,12 @@ $('#loanForm').addEventListener('submit',async e=>{
 $('#search').addEventListener('input',e=>{
   state.q=e.target.value.trim().toLowerCase();state.attn=null;
   if(state.ladder){state.ladder=null;buildLadder();}
+  state.rateLadder=null;
   render();
 });
 $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
 $('#clear').addEventListener('click',()=>{
-  state.q='';state.status.clear();state.cat.clear();state.lender.clear();state.attn=null;state.ladder=null;
+  state.q='';state.status.clear();state.cat.clear();state.lender.clear();state.attn=null;state.ladder=null;state.rateLadder=null;
   $('#search').value='';syncChips();buildLadder();render();
 });
 $('#exportBtn').addEventListener('click',exportToExcel);
