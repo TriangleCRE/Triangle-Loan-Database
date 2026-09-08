@@ -59,10 +59,11 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .kpi .val small{font-size:.85rem;color:var(--muted);font-weight:400}
 .kpi .sub{font-family:var(--body);font-size:.74rem;color:var(--muted);margin-top:8px}
 .kpi .sub b{color:var(--green-deep);font-weight:600}
-.kpi-bar{margin-top:10px;height:5px;border-radius:3px;background:var(--green-wash);overflow:hidden}
-.kpi-bar-fill{height:100%;background:var(--amber);border-radius:3px}
-.kpi-bar.clickable{cursor:pointer}
-.kpi-bar.clickable:hover{opacity:.75}
+.kpi-spark{margin-top:12px;height:22px;display:flex;align-items:flex-end;gap:4px}
+.kpi-spark-bar{flex:1;min-width:5px;border-radius:2px 2px 0 0;background:var(--green);transition:opacity .15s}
+.kpi-spark-bar.past{background:var(--amber)}
+.kpi-spark.clickable{cursor:pointer}
+.kpi-spark.clickable:hover .kpi-spark-bar{opacity:.7}
 
 /* ---------- Ladder ---------- */
 .panels{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;margin-top:20px}
@@ -467,6 +468,13 @@ function computeKpis(){
   const rateWatch=active.filter(l=>l.rateChange).sort((a,b)=>a.rateChange<b.rateChange?-1:1);
   const rateOverdue=rateWatch.filter(l=>new Date(l.rateChange+'T00:00:00')<TODAY);
   const rateUpcoming=rateWatch.length-rateOverdue.length;
+  // Tiny by-year bar chart for the "Rate changes" tile below - counts, not
+  // balance, since the tile's own text already talks in counts ("N past
+  // due / M upcoming") and the two should read the same way at a glance.
+  const rateByYear={};
+  rateWatch.forEach(l=>{const y=yearOf(l.rateChange);rateByYear[y]=(rateByYear[y]||0)+1;});
+  const rateYears=Object.keys(rateByYear).map(Number).sort((a,b)=>a-b);
+  const rateMaxCount=Math.max(...rateYears.map(y=>rateByYear[y]),1);
   const kpis=[
     {lab:'Active debt outstanding',val:money(totAct),sub:`Across <b>${active.length}</b> active loans`},
     {lab:'Total loans on file',val:LOANS.length,sub:`${active.length} active · ${LOANS.length-active.length} closed`},
@@ -476,13 +484,18 @@ function computeKpis(){
       sub:nextMat?esc(nextMat._name):'—'},
     {lab:'Rate changes',val:rateWatch.length||'—',
       sub:rateWatch.length?`<b style="color:${rateOverdue.length?'var(--amber)':'var(--green-deep)'}">${rateOverdue.length}</b> past due · ${rateUpcoming} upcoming`:'No adjustable-rate resets on file',
-      bar:rateWatch.length?{pct:Math.round(rateOverdue.length/rateWatch.length*100),clickable:rateOverdue.length>0}:null}
+      spark:rateWatch.length?{clickable:rateOverdue.length>0,bars:rateYears.map(y=>({
+        y,n:rateByYear[y],past:y<=TODAY.getFullYear(),
+        pct:Math.max(rateByYear[y]/rateMaxCount*100,14)
+      }))}:null}
   ];
   $('#kpis').innerHTML=kpis.map(k=>
     `<div class="kpi"><div class="lab">${k.lab}</div><div class="val">${k.val??'—'}</div><div class="sub">${k.sub}</div>`+
-    (k.bar?`<div class="kpi-bar${k.bar.clickable?' clickable':''}"${k.bar.clickable?' data-attn="ratechg"':''} title="${k.bar.clickable?'Click to see the loans with a rate change past due':'No rate changes past due'}"><div class="kpi-bar-fill" style="width:${k.bar.pct}%"></div></div>`:'')+
+    (k.spark?`<div class="kpi-spark${k.spark.clickable?' clickable':''}"${k.spark.clickable?' data-attn="ratechg"':''} title="${k.spark.clickable?'Click to see the loans with a rate change past due':'Rate changes by year'}">`+
+      k.spark.bars.map(b=>`<div class="kpi-spark-bar ${b.past?'past':''}" style="height:${b.pct}%" title="${b.y}: ${b.n} loan${b.n>1?'s':''}"></div>`).join('')+
+      `</div>`:'')+
     `</div>`).join('');
-  document.querySelectorAll('#kpis .kpi-bar.clickable').forEach(el=>el.addEventListener('click',()=>applyAttnFilter(el.dataset.attn)));
+  document.querySelectorAll('#kpis .kpi-spark.clickable').forEach(el=>el.addEventListener('click',()=>applyAttnFilter(el.dataset.attn)));
   $('#asof-count').textContent=LOANS.length;
 }
 
