@@ -51,7 +51,7 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--green-deep);display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .eyebrow::before{content:"";width:0;height:0;border-left:8px solid var(--green);border-top:5px solid transparent;border-bottom:5px solid transparent}
 
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .kpi{padding:22px 24px;border-right:1px solid var(--line);position:relative}
 .kpi:last-child{border-right:0}
 .kpi .lab{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
@@ -464,13 +464,18 @@ function computeKpis(){
   const futureMat=active.filter(l=>l.maturity&&new Date(l.maturity+'T00:00:00')>=TODAY)
                         .sort((a,b)=>a.maturity<b.maturity?-1:1);
   const nextMat=futureMat[0];
+  const rateWatch=active.filter(l=>l.rateChange).sort((a,b)=>a.rateChange<b.rateChange?-1:1);
+  const rateOverdue=rateWatch.filter(l=>new Date(l.rateChange+'T00:00:00')<TODAY);
+  const rateUpcoming=rateWatch.length-rateOverdue.length;
   const kpis=[
     {lab:'Active debt outstanding',val:money(totAct),sub:`Across <b>${active.length}</b> active loans`},
     {lab:'Total loans on file',val:LOANS.length,sub:`${active.length} active · ${LOANS.length-active.length} closed`},
     {lab:'Wtd. avg rate <small>active</small>',val:pct(wavg),sub:`Balance-weighted, where rate is known`},
     {lab:'Monthly debt service',val:money(moDS),sub:`Active loans · <b>${money(moDS*12)}</b>/yr`},
     {lab:'Next maturity',val:nextMat?fmtDate(nextMat.maturity).replace(/,.*/,'').replace(/(\w+) (\d+)/,'$1 ’'+String(yearOf(nextMat.maturity)).slice(2)):'—',
-      sub:nextMat?esc(nextMat._name):'—'}
+      sub:nextMat?esc(nextMat._name):'—'},
+    {lab:'Rate changes',val:rateWatch.length||'—',
+      sub:rateWatch.length?`<b style="color:${rateOverdue.length?'var(--amber)':'var(--green-deep)'}">${rateOverdue.length}</b> past due · ${rateUpcoming} upcoming`:'No adjustable-rate resets on file'}
   ];
   $('#kpis').innerHTML=kpis.map(k=>
     `<div class="kpi"><div class="lab">${k.lab}</div><div class="val">${k.val??'—'}</div><div class="sub">${k.sub}</div></div>`).join('');
@@ -535,7 +540,8 @@ function buildAttn(){
     {test:l=>l._statusBucket==='verify',label:'Closed but still showing a balance',key:'verify'},
     {test:l=>l._flag,label:'Reconciliation flag between source files',key:'flag'},
     {test:l=>l.doc==='No'||l.doc==='Verify',label:'No loan document on file yet',key:'nodoc'},
-    {test:l=>{if(!l.maturity)return false;return new Date(l.maturity+'T00:00:00')<TODAY && l._statusBucket==='active';},label:'Active loan past its maturity date',key:'pastmat'}
+    {test:l=>{if(!l.maturity)return false;return new Date(l.maturity+'T00:00:00')<TODAY && l._statusBucket==='active';},label:'Active loan past its maturity date',key:'pastmat'},
+    {test:l=>{if(!l.rateChange)return false;return new Date(l.rateChange+'T00:00:00')<TODAY && l._statusBucket==='active';},label:'Active loan with a rate change date past due',key:'ratechg'}
   ];
   const html=items.map(it=>{
     const n=LOANS.filter(it.test).length;
@@ -558,7 +564,8 @@ const ATTN_TEST={
   verify:l=>l._statusBucket==='verify',
   flag:l=>l._flag,
   nodoc:l=>l.doc==='No'||l.doc==='Verify',
-  pastmat:l=>l.maturity&&new Date(l.maturity+'T00:00:00')<TODAY&&l._statusBucket==='active'
+  pastmat:l=>l.maturity&&new Date(l.maturity+'T00:00:00')<TODAY&&l._statusBucket==='active',
+  ratechg:l=>l.rateChange&&new Date(l.rateChange+'T00:00:00')<TODAY&&l._statusBucket==='active'
 };
 
 function buildChips(){
@@ -888,7 +895,7 @@ function render(){
   const total=LOANS.length;
   let label=`Showing <b style="color:var(--ink);font-weight:600">${list.length}</b> of ${total} loans`;
   if(state.attn){
-    const names={verify:'closed loans still showing a balance',flag:'loans with reconciliation flags',nodoc:'loans with no document on file',pastmat:'active loans past maturity'};
+    const names={verify:'closed loans still showing a balance',flag:'loans with reconciliation flags',nodoc:'loans with no document on file',pastmat:'active loans past maturity',ratechg:'active loans with a rate change date past due'};
     label+=` · <span style="color:var(--amber)">${names[state.attn]}</span>`;
   }
   if(state.ladder){
