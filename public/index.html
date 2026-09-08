@@ -110,6 +110,10 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .src-link{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;color:var(--muted);text-decoration:none;white-space:nowrap;transition:color .15s}
 .src-link:hover{color:var(--green-deep);text-decoration:underline}
 .src-link svg{width:12px;height:12px;stroke:currentColor;flex:none}
+.doc-list{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.doc-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:.8rem;color:var(--green-deep);text-decoration:none;padding:4px 11px;border:1px solid var(--line-strong);border-radius:100px;background:var(--surface);transition:background .15s,border-color .15s}
+.doc-link:hover{background:var(--green-wash);border-color:var(--green)}
+.doc-link svg{width:13px;height:13px;stroke:currentColor;flex:none}
 .btn-add{background:var(--ink);border-color:var(--ink)}
 .btn-add:hover{background:#000;border-color:#000}
 .btn-add:active{background:var(--ink)}
@@ -628,6 +632,19 @@ function field(label,val,opts={}){
   const cls=opts.txt?'txt':'';
   return `<div class="field"><dt>${label}</dt><dd class="${empty?'empty':cls}">${empty?'—':val}</dd></div>`;
 }
+// Renders a loan's `documents` array (each {label,url}, e.g. {label:'BLA',
+// url:'https://drive.google.com/...'}) as a row of pill links, the file's
+// label hyperlinked straight to it in a new tab. Returns null when there's
+// nothing on file so field() falls back to its usual empty-state dash.
+function documentsHTML(l){
+  const docs=Array.isArray(l.documents)?l.documents:[];
+  if(!docs.length)return null;
+  return `<div class="doc-list">${docs.map(d=>
+    `<a class="doc-link" href="${esc(d.url)}" target="_blank" rel="noopener" title="Open ${esc(d.label)}">`+
+    `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>`+
+    `${esc(d.label)}</a>`
+  ).join('')}</div>`;
+}
 function detailHTML(l){
   const rate=isNum(l.rate)?pct(l.rate):null;
   const dc=[l.category, l.company?('Owner: '+esc(l.company)):null].filter(Boolean)
@@ -669,7 +686,8 @@ function detailHTML(l){
   const lenderSec=[
     field('Bank / lender',l._lender?esc(l._lender):null,{txt:1}),
     field('Lender contact',l.contact?esc(l.contact):null,{txt:1}),
-    field('Document on file',l.doc?esc(l.doc):null,{txt:1})
+    field('Document on file',l.doc?esc(l.doc):null,{txt:1}),
+    field('Documents',documentsHTML(l),{txt:1})
   ].join('');
 
   let notes='';
