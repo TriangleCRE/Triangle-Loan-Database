@@ -15,7 +15,7 @@ const {
   isValidSessionCookie,
   parseCookies,
 } = require("./lib/auth");
-const { listLoans, createLoan, updateLoan, deleteLoan, syncFromSeed, getLastUpdated } = require("./lib/loans");
+const { listLoans, createLoan, updateLoan, deleteLoan, getLastUpdated } = require("./lib/loans");
 const { listPayments, recordPayment, deleteLatestPayment } = require("./lib/payments");
 
 const app = express();
@@ -226,24 +226,11 @@ app.post("/api/loans", async (req, res, next) => {
 });
 
 // Powers the header's "Last updated" date — the most recent time any loan
-// was touched (edited, synced from the spreadsheet, or had a payment
-// recorded), so that date never needs to be hand-edited in the HTML again.
+// was touched (edited, or had a payment recorded), so that date never
+// needs to be hand-edited in the HTML again.
 app.get("/api/meta", async (req, res, next) => {
   try {
     res.json({ lastUpdated: await getLastUpdated() });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// Re-applies the data/loans.seed.json bundled in this deploy to the live
-// database — the "Sync from Spreadsheet" button's endpoint. See
-// lib/loans.js's syncFromSeed() for exactly what this does and doesn't
-// touch. Sits behind the same session gate as everything else here.
-app.post("/api/loans/sync-from-seed", async (req, res, next) => {
-  try {
-    const result = await syncFromSeed();
-    res.json(result);
   } catch (err) {
     next(err);
   }
