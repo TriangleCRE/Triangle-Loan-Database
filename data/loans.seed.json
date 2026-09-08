@@ -151,7 +151,7 @@
     "contact": "deK Bowen",
     "account": "22113345",
     "opened": "2011-03-07",
-    "maturity": "2020-10-21",
+    "maturity": "2027-07-21",
     "amort": "20 yr",
     "loanType": "7 years indicative fixed rate",
     "rate": 0.0465,
@@ -162,10 +162,10 @@
     "orig": 2010760,
     "prepay": "unclear from folder",
     "priorDetails": "7/21/22 Refi - loan increased",
-    "notes": "7/21/22 Refi - loan increased",
+    "notes": "7/21/22 Refi - loan increased; Maturity corrected to 7/21/2027 - verified against the Jul 2022 refinance note (25-yr amortization) in Drive; the 10/21/2020 date was from the superseded original note.",
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
-    "flags": "Maturity differs (Jeryl 2020-10-21 / Ben 2026-02-15); Orig amt differs (Jeryl $2,010,760 / Ben $2,942,606)",
+    "flags": "Orig amt differs (Jeryl $2,010,760 / Ben $2,942,606)",
     "id": 5,
     "yardiId": "p0000044",
     "group": "MTAP",
@@ -501,7 +501,7 @@
     "notes": "1/29/16 refi - pd off loan#437712558 & combined loans; current opened 1/26/2026",
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
-    "flags": "Orig amt differs (Jeryl $850,000 / Ben $816,000)",
+    "flags": "Orig amt differs (Jeryl $850,000 / Ben $816,000); Original-term maturity 1/26/2026 (dashboard shows 1/25/2026, off by a day); renewal document needed to confirm current maturity.",
     "id": 16,
     "yardiId": "p0000035",
     "group": "MDW",
@@ -885,7 +885,8 @@
         "label": "PN",
         "url": "https://drive.google.com/file/d/12cKbR4eJFrCpOAW4VT_dwsmsKcAMX4Gt/view"
       }
-    ]
+    ],
+    "flags": "Original-term maturity 1/26/2026; renewal document needed."
   },
   {
     "category": "Due to/Due From",
@@ -931,7 +932,7 @@
     "contact": "deK Bowen",
     "account": "431759965",
     "opened": "2006-06-25",
-    "maturity": "2025-03-08",
+    "maturity": null,
     "loanType": "yearly",
     "rate": 0.0725,
     "rateChange": "2025-12-12",
@@ -955,7 +956,8 @@
         "url": "https://drive.google.com/file/d/1xA_aSR8eddqtusjr7OrsShtVXaZcYv4s/view"
       }
     ],
-    "pmtM": "varied"
+    "pmtM": "varied",
+    "flags": "On Demand - revolving LOC payable on demand, subject to annual review each 3/8; no fixed maturity date (verified against Drive documents)."
   },
   {
     "category": "Due to/Due From",
