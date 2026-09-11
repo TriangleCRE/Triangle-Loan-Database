@@ -232,9 +232,61 @@ header{background:var(--charcoal);color:#fff;border-bottom:3px solid var(--green
 .btn-save:hover{background:var(--green)}
 .btn-save:disabled{opacity:.6;cursor:default}
 @media(max-width:640px){.mgrid{grid-template-columns:1fr}}
+.modal.wide{max-width:880px}
 .rate-modal-body{padding:22px 24px}
 .rate-modal-intro{font-family:var(--body);font-size:.82rem;color:var(--muted);line-height:1.5;margin:0 0 20px}
 .rate-modal-body .ladder{margin-top:0}
+
+/* ---------- Rate-change timeline (month-by-month chart in the pop-up) ---------- */
+.rc-wrap{position:relative}
+.rc-scroll{overflow-x:auto;overflow-y:visible;padding-bottom:2px}
+.rc-scale{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2);margin-bottom:4px}
+.rc-plot{display:flex;align-items:flex-end;gap:3px;height:132px;min-width:100%;border-top:1px dashed var(--line)}
+.rc-col{flex:1 1 0;min-width:16px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;border-radius:5px 5px 0 0;transition:background .15s}
+.rc-col:hover{background:var(--green-wash)}
+.rc-col.sel{background:var(--green-wash)}
+.rc-col.empty{cursor:default}
+.rc-col.empty:hover{background:transparent}
+.rc-n{font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center;height:13px;line-height:13px}
+.rc-col.sel .rc-n{color:var(--green-deep);font-weight:600}
+.rc-bar{display:block;height:0;border-radius:3px 3px 0 0;background:var(--green);transition:height .7s cubic-bezier(.22,1,.36,1)}
+.rc-bar.past{background:var(--amber)}
+.rc-col.sel .rc-bar{box-shadow:0 0 0 2px var(--green-deep)}
+.rc-col.empty .rc-bar{height:2px!important;background:var(--line)}
+.rc-axis{display:flex;gap:3px;margin-top:7px;min-width:100%}
+.rc-tick{flex:1 1 0;min-width:16px;text-align:center;font-family:var(--mono);font-size:.56rem;letter-spacing:.02em;color:var(--muted-2);white-space:nowrap;overflow:hidden}
+.rc-tick.now{color:var(--green-deep);font-weight:600}
+.rc-years{display:flex;gap:3px;margin-top:5px;min-width:100%}
+.rc-year{font-family:var(--mono);font-size:.68rem;color:var(--muted);text-align:center;border-top:1px solid var(--line-strong);padding:5px 0 3px;cursor:pointer;border-radius:0 0 5px 5px;transition:color .15s,background .15s}
+.rc-year:hover{color:var(--green-deep);background:var(--green-wash)}
+.rc-year.sel{color:var(--green-deep);font-weight:700;background:var(--green-wash)}
+.rc-tip{position:absolute;z-index:6;pointer-events:none;background:var(--ink);color:#fff;border-radius:10px;padding:12px 14px;width:290px;box-shadow:0 14px 38px rgba(0,0,0,.3);line-height:1.4}
+.rc-tip h5{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.rc-tip .rc-tsub{font-family:var(--mono);font-size:.62rem;color:rgba(255,255,255,.6);margin-top:2px}
+.rc-tip .rc-tl{border-top:1px solid rgba(255,255,255,.16);margin-top:9px;padding-top:9px;font-size:.78rem;font-weight:600}
+.rc-tip .rc-meta{font-family:var(--mono);font-size:.64rem;font-weight:400;color:rgba(255,255,255,.74);margin-top:2px}
+.rc-tip .rc-foot{margin-top:10px;font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+.rc-list{margin-top:20px;border-top:1px solid var(--line);padding-top:6px;max-height:300px;overflow-y:auto}
+.rc-mhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px;padding:3px 4px;border-radius:5px;cursor:pointer;transition:color .15s,background .15s}
+.rc-mhead:hover{color:var(--green-deep);background:var(--green-wash)}
+.rc-mhead.sel{color:var(--green-deep);font-weight:700;background:var(--green-wash)}
+.rc-mhead .rc-mamt{letter-spacing:.02em;text-transform:none;color:var(--muted-2)}
+.rc-row{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:baseline;padding:9px 10px;border:1px solid transparent;border-radius:8px;cursor:pointer;transition:background .15s,border-color .15s}
+.rc-row:hover{background:var(--green-wash);border-color:#cfe3d2}
+.rc-row.sel{background:var(--green-wash);border-color:var(--green)}
+.rc-row .rc-d{font-family:var(--mono);font-size:.7rem;color:var(--green-deep)}
+.rc-row .rc-d.past{color:var(--amber)}
+.rc-row .rc-nm{display:block;font-size:.82rem;font-weight:600}
+.rc-row .rc-sub{display:block;font-size:.72rem;color:var(--muted);margin-top:2px}
+.rc-row .rc-amt{font-family:var(--mono);font-size:.74rem;color:var(--muted);text-align:right}
+.rc-none{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);font-size:.78rem;color:var(--muted);cursor:pointer}
+.rc-none:hover,.rc-none.sel{color:var(--green-deep)}
+.rc-empty{font-family:var(--body);font-size:.82rem;color:var(--muted);padding:10px 0}
+@media(max-width:640px){
+  .rc-tip{width:230px}
+  .rc-row{grid-template-columns:1fr auto}
+  .rc-row .rc-d{grid-column:1/-1}
+}
 
 .empty-state{text-align:center;padding:70px 20px;color:var(--muted)}
 .empty-state .tri{width:0;height:0;border-left:16px solid var(--line-strong);border-top:11px solid transparent;border-bottom:11px solid transparent;margin:0 auto 18px;transform:rotate(90deg)}
@@ -390,19 +442,27 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
 </div>
 
 <div class="modal-overlay" id="rateModalOverlay">
-  <div class="modal">
+  <div class="modal wide">
     <div class="modal-head">
-      <h3>Rate changes <span class="note">by year · current balance</span></h3>
+      <h3>Rate changes <span class="note">by month · current balance</span></h3>
       <button class="modal-close" id="rateModalClose" type="button" aria-label="Close">&times;</button>
     </div>
     <div class="rate-modal-body">
-      <p class="rate-modal-intro">Active loans whose interest rate is set to adjust, reset, or come up for review, grouped by the year it's due. A year at or before this one means that loan's rate change date has already passed and hasn't been confirmed as resolved - click a bar to filter the loan list below to just those loans.</p>
-      <div class="ladder" id="rateModalLadder"></div>
+      <p class="rate-modal-intro">Active loans whose interest rate is set to adjust, reset, or come up for review, placed on the month it's due - bar height is the balance up for review. Amber means that date has already passed and hasn't been confirmed as resolved. Hover a month for the loans, exact dates and rates behind it; click a month, a year, or a single loan below to filter the loan list.</p>
+      <div class="rc-wrap" id="rateChartWrap">
+        <div class="rc-scale"><span>Loans · balance up for review</span><span id="rateScaleMax"></span></div>
+        <div class="rc-scroll">
+          <div class="rc-plot" id="rateChart"></div>
+          <div class="rc-axis" id="rateAxis"></div>
+          <div class="rc-years" id="rateYears"></div>
+        </div>
+        <div class="rc-tip" id="rateTip" hidden></div>
+      </div>
       <div class="ladder-foot">
         <span><i class="dot" style="background:var(--green)"></i> Upcoming rate change</span>
-        <span><i class="dot" style="background:var(--amber)"></i> Rate change due this year or earlier</span>
-        <span>Click a bar to filter the loans below to that year</span>
+        <span><i class="dot" style="background:var(--amber)"></i> Rate change already past due</span>
       </div>
+      <div class="rc-list" id="rateList"></div>
     </div>
   </div>
 </div>
@@ -493,10 +553,18 @@ function computeKpis(){
   // Tiny by-year bar chart for the "Rate changes" tile below - counts, not
   // balance, since the tile's own text already talks in counts ("N past
   // due / M upcoming") and the two should read the same way at a glance.
+  // Still a bar per year here (the tile is far too narrow for a bar per
+  // month); the pop-up it opens carries the month-by-month detail. Amber
+  // means a date in that year has genuinely gone by, same rule as there.
   const rateByYear={};
-  rateWatch.forEach(l=>{const y=yearOf(l.rateChange);rateByYear[y]=(rateByYear[y]||0)+1;});
+  rateWatch.forEach(l=>{
+    const y=yearOf(l.rateChange);
+    rateByYear[y]=rateByYear[y]||{n:0,past:0};
+    rateByYear[y].n++;
+    if(ratePastDue(l))rateByYear[y].past++;
+  });
   const rateYears=Object.keys(rateByYear).map(Number).sort((a,b)=>a-b);
-  const rateMaxCount=Math.max(...rateYears.map(y=>rateByYear[y]),1);
+  const rateMaxCount=Math.max(...rateYears.map(y=>rateByYear[y].n),1);
   const kpis=[
     {lab:'Active debt outstanding',val:money(totAct),sub:`Across <b>${active.length}</b> active loans`},
     {lab:'Total loans on file',val:LOANS.length,sub:`${active.length} active · ${LOANS.length-active.length} closed`},
@@ -508,13 +576,13 @@ function computeKpis(){
       sub:rateWatch.length?`<b style="color:${rateOverdue.length?'var(--amber)':'var(--green-deep)'}">${rateOverdue.length}</b> past due · ${rateUpcoming} upcoming`:'No adjustable-rate resets on file',
       id:rateWatch.length?'rateKpiTile':null,
       spark:rateWatch.length?{bars:rateYears.map(y=>({
-        y,n:rateByYear[y],past:y<=TODAY.getFullYear(),
-        pct:Math.max(rateByYear[y]/rateMaxCount*100,14)
+        y,n:rateByYear[y].n,past:rateByYear[y].past>0,
+        pct:Math.max(rateByYear[y].n/rateMaxCount*100,14)
       }))}:null}
   ];
   $('#kpis').innerHTML=kpis.map(k=>
     `<div class="kpi${k.id?' kpi-clickable':''}"${k.id?` id="${k.id}" title="Click for the full breakdown"`:''}><div class="lab">${k.lab}</div><div class="val">${k.val??'—'}</div><div class="sub">${k.sub}</div>`+
-    (k.spark?`<div class="kpi-spark">${k.spark.bars.map(b=>`<div class="kpi-spark-bar ${b.past?'past':''}" style="height:${b.pct}%" title="${b.y}: ${b.n} loan${b.n>1?'s':''}"></div>`).join('')}</div>`:'')+
+    (k.spark?`<div class="kpi-spark">${k.spark.bars.map(b=>`<div class="kpi-spark-bar ${b.past?'past':''}" style="height:${b.pct}%" title="${b.y}: ${b.n} loan${b.n>1?'s':''} — click the tile for the month-by-month detail"></div>`).join('')}</div>`:'')+
     `</div>`).join('');
   if($('#rateKpiTile'))$('#rateKpiTile').addEventListener('click',openRateModal);
   $('#asof-count').textContent=LOANS.length;
@@ -562,9 +630,10 @@ function buildLadder(){
   },80);});
   $('#ladder').querySelectorAll('[data-ladder]').forEach(r=>r.addEventListener('click',()=>{
     const key=r.dataset.ladder;
-    state.ladder = state.ladder===key?null:key;
+    const next = state.ladder===key?null:key;
     // clear other filters for a clean view, same as clicking a "needs attention" item
-    state.attn=null;state.rateLadder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+    clearFilters();
+    state.ladder=next;
     syncChips();buildLadder();render();
     document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
   }));
@@ -577,50 +646,186 @@ function abbr(n){if(n>=1e6)return '$'+(n/1e6).toFixed(n>=1e7?1:2)+'M';if(n>=1e3)
 // operationally relevant, and the KPI tile this expands from is
 // active-only too, so the detail view should never show a bigger/
 // different set of loans than the tile promised.
+const pad2=n=>String(n).padStart(2,'0');
+const MONTH_NOW=`${TODAY.getFullYear()}-${pad2(TODAY.getMonth()+1)}`;
+const TODAY_STR=`${MONTH_NOW}-${pad2(TODAY.getDate())}`;
+// past due means the date itself has gone by - not just the month, so a
+// reset later this month still reads as upcoming
+const ratePastDue=l=>!!l.rateChange&&l.rateChange<TODAY_STR;
+// dates are stored as plain YYYY-MM-DD strings, so the month is a slice -
+// no Date() round-trip, and 'YYYY-MM' keys sort and compare as text.
+const monthOf=s=>s?s.slice(0,7):null;
+const monthName=(k,long)=>{const[y,m]=k.split('-');return new Date(+y,+m-1,1)
+  .toLocaleDateString('en-US',long?{month:'long',year:'numeric'}:{month:'short'});};
+// every month from a to b inclusive, so a quiet stretch between two rate
+// changes reads as real elapsed time instead of collapsing into one gap
+function monthSpan(a,b){
+  const out=[];let[y,m]=a.split('-').map(Number);const[ey,em]=b.split('-').map(Number);
+  while(y<ey||(y===ey&&m<=em)){out.push(`${y}-${pad2(m)}`);m++;if(m>12){m=1;y++;}}
+  return out;
+}
+// Bucket keys a loan falls into on the rate-change chart. Year and month
+// are kept separate so a year label and a month bar can each filter the
+// loan list on their own terms, the same way the maturity ladder does.
 function rateChangeKey(l){
   if(l._statusBucket!=='active')return null;
   if(!l.rateChange)return 'none';
   return String(yearOf(l.rateChange));
 }
-function buildRateModalLadder(){
-  const buckets={};
-  LOANS.forEach(l=>{
-    const key=rateChangeKey(l);
-    if(key===null)return;
-    buckets[key]=buckets[key]||{amt:0,cnt:0};
-    if(isNum(l.balance))buckets[key].amt+=l.balance;
-    buckets[key].cnt++;
+function rateChangeMonthKey(l){
+  if(l._statusBucket!=='active')return null;
+  if(!l.rateChange)return 'none';
+  return monthOf(l.rateChange);
+}
+function rateWatchLoans(){
+  return LOANS.filter(l=>l._statusBucket==='active'&&l.rateChange)
+              .sort((a,b)=>a.rateChange<b.rateChange?-1:1);
+}
+function rateMoveText(l){
+  const cur=isNum(l.rate)?pct(l.rate):'rate not on file';
+  return `${cur} → ${l.newRate?esc(l.newRate):'new rate not on file'}`;
+}
+function loansByRateMonth(){
+  const by={};
+  rateWatchLoans().forEach(l=>{const k=monthOf(l.rateChange);(by[k]=by[k]||[]).push(l);});
+  return by;
+}
+const sumBal=ls=>ls.reduce((s,l)=>s+(isNum(l.balance)?l.balance:0),0);
+
+/* ---------- the month-by-month chart ---------- */
+let RATE_BY_MONTH={};
+function buildRateChart(){
+  RATE_BY_MONTH=loansByRateMonth();
+  const filled=Object.keys(RATE_BY_MONTH).sort();
+  if(!filled.length){
+    $('#rateChart').innerHTML='<p class="rc-empty">No active loan has a rate change date on file.</p>';
+    $('#rateAxis').innerHTML='';$('#rateYears').innerHTML='';$('#rateScaleMax').textContent='';
+    return;
+  }
+  // fill the gaps, unless the spread is so wide the bars would be unreadable
+  const span=monthSpan(filled[0],filled[filled.length-1]);
+  const months=span.length<=72?span:filled;
+  const amt=k=>sumBal(RATE_BY_MONTH[k]||[]);
+  const max=Math.max(...filled.map(amt),1);
+  $('#rateScaleMax').textContent='top of chart = '+abbr(max);
+  $('#rateChart').innerHTML=months.map(k=>{
+    const ls=RATE_BY_MONTH[k]||[];
+    // a month with loans but no balance on file still gets a visible stub
+    const h=ls.length?Math.max(amt(k)/max*100,6):0;
+    return `<div class="rc-col ${ls.length?'':'empty'}${state.rateMonth===k?' sel':''}" data-rcmonth="${k}"`+
+      (ls.length?` title="${esc(monthName(k,1))}: ${ls.length} loan${ls.length>1?'s':''} · ${abbr(amt(k))}"`:'')+`>`+
+      `<span class="rc-n">${ls.length||''}</span>`+
+      `<span class="rc-bar ${ls.some(ratePastDue)?'past':''}" data-h="${h}"></span></div>`;
+  }).join('');
+  // month names only where they'll fit; the year strip below carries the rest
+  const everyMonth=months.length<=18;
+  $('#rateAxis').innerHTML=months.map(k=>{
+    const now=k===MONTH_NOW;
+    const lab=now?'now':((everyMonth||+k.slice(5,7)%3===1)?monthName(k):'');
+    return `<span class="rc-tick${now?' now':''}">${lab}</span>`;
+  }).join('');
+  const years=[];
+  months.forEach(k=>{
+    const y=k.slice(0,4),last=years[years.length-1];
+    if(last&&last.y===y)last.n++;else years.push({y,n:1});
   });
-  const order=Object.keys(buckets).filter(k=>k!=='none').sort((a,b)=>+a-+b);
-  const max=Math.max(...order.map(k=>buckets[k].amt),1);
-  const noRate=buckets['none']?buckets['none'].cnt:0;
-  $('#rateModalLadder').innerHTML=order.map(k=>{
-    const b=buckets[k];
-    const isPast=+k<=TODAY.getFullYear();
-    const w=Math.max((b.amt/max)*100, b.amt>0?4:0);
-    const sel=state.rateLadder===k;
-    return `<div class="rung ${sel?'sel':''}" data-ratel="${esc(k)}" title="Show active loans with a rate change due in ${k}"><div class="yr ${isPast?'past':''}">${k}</div>
-      <div class="track"><div class="fill ${isPast?'past':''}" data-w="${w}"><span class="cnt">${b.cnt} loan${b.cnt>1?'s':''}</span></div></div>
-      <div class="amt">${b.amt>0?abbr(b.amt):'—'}</div></div>`;
-  }).join('') + (noRate?`<div class="rung ${state.rateLadder==='none'?'sel':''}" data-ratel="none" title="Show active loans with no rate-change date on file"><div class="yr" style="color:var(--muted-2)">n/a</div><div class="track" style="background:repeating-linear-gradient(45deg,var(--paper),var(--paper) 5px,#eceeea 5px,#eceeea 10px)"></div><div class="amt">${noRate} loan${noRate>1?'s':''}</div></div>`:'');
+  $('#rateYears').innerHTML=years.map(g=>
+    `<span class="rc-year${state.rateLadder===g.y?' sel':''}" data-rcyear="${g.y}" style="flex:${g.n} 1 0;min-width:${g.n*16+(g.n-1)*3}px" title="Show active loans with a rate change due in ${g.y}">${g.y}</span>`
+  ).join('');
   requestAnimationFrame(()=>{setTimeout(()=>{
-    $('#rateModalLadder').querySelectorAll('.fill').forEach(f=>{f.style.width=f.dataset.w+'%';const c=f.querySelector('.cnt');if(c&&f.offsetWidth>58)c.style.opacity=1;});
+    $('#rateChart').querySelectorAll('.rc-bar').forEach(b=>{b.style.height=b.dataset.h+'%';});
   },80);});
-  $('#rateModalLadder').querySelectorAll('[data-ratel]').forEach(r=>r.addEventListener('click',()=>{
-    const key=r.dataset.ratel;
-    state.rateLadder = state.rateLadder===key?null:key;
-    // clear other filters for a clean view, same as clicking the maturity ladder or a "needs attention" item
-    state.attn=null;state.ladder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
-    syncChips();buildLadder();render();
-    closeRateModal();
-    document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
-  }));
+  $('#rateChart').querySelectorAll('.rc-col:not(.empty)').forEach(c=>{
+    c.addEventListener('mouseenter',()=>showRateTip(c));
+    c.addEventListener('mouseleave',hideRateTip);
+    c.addEventListener('click',()=>pickRateMonth(c.dataset.rcmonth));
+  });
+  $('#rateYears').querySelectorAll('[data-rcyear]').forEach(y=>
+    y.addEventListener('click',()=>pickRateYear(y.dataset.rcyear)));
+}
+
+/* ---------- hover detail ---------- */
+// What's actually behind a bar: which loans, the exact reset date, the rate
+// they're moving off and what they're moving to.
+const TIP_MAX=5;
+function rateTipHTML(k){
+  const all=RATE_BY_MONTH[k]||[],ls=all.slice(0,TIP_MAX);
+  return `<h5>${esc(monthName(k,1))}</h5>`+
+    `<div class="rc-tsub">${all.length} loan${all.length>1?'s':''} · ${abbr(sumBal(all))} of balance</div>`+
+    ls.map(l=>`<div class="rc-tl">${esc(l._name)}`+
+      `<div class="rc-meta">${fmtDate(l.rateChange)} · ${rateMoveText(l)}</div>`+
+      `<div class="rc-meta">${l._lender?esc(l._lender):'lender not on file'} · ${isNum(l.balance)?money(l.balance):'balance not on file'}</div>`+
+      `</div>`).join('')+
+    (all.length>TIP_MAX?`<div class="rc-tl">+ ${all.length-TIP_MAX} more</div>`:'')+
+    `<div class="rc-foot">Click to filter the loans below to this month</div>`;
+}
+// Parked just under the chart rather than floating over the bars, so the
+// month you're reading about stays visible while you read about it.
+function showRateTip(col){
+  const tip=$('#rateTip'),wrap=$('#rateChartWrap');
+  tip.innerHTML=rateTipHTML(col.dataset.rcmonth);
+  tip.hidden=false;
+  const w=wrap.getBoundingClientRect(),c=col.getBoundingClientRect();
+  const left=Math.max(0,Math.min(c.left-w.left+c.width/2-tip.offsetWidth/2,w.width-tip.offsetWidth));
+  tip.style.left=left+'px';
+  tip.style.top=(w.height+8)+'px';
+}
+function hideRateTip(){const t=$('#rateTip');if(t)t.hidden=true;}
+
+/* ---------- the loan-by-loan list under the chart ---------- */
+function buildRateList(){
+  const by=loansByRateMonth();
+  const noRate=LOANS.filter(l=>l._statusBucket==='active'&&!l.rateChange).length;
+  const html=Object.keys(by).sort().map(k=>{
+    const g=by[k];
+    return `<div class="rc-mhead${state.rateMonth===k?' sel':''}" data-rcmonth="${k}" title="Show active loans with a rate change due in ${esc(monthName(k,1))}">`+
+      `<span>${esc(monthName(k,1))}</span>`+
+      `<span class="rc-mamt">${g.length} loan${g.length>1?'s':''} · ${abbr(sumBal(g))}</span></div>`+
+      g.map(l=>`<div class="rc-row${state.rateLoan===l.id?' sel':''}" data-rcloan="${l.id}" title="Show just this loan">`+
+        `<span class="rc-d ${ratePastDue(l)?'past':''}">${fmtDate(l.rateChange)}</span>`+
+        `<span><span class="rc-nm">${esc(l._name)}</span>`+
+        `<span class="rc-sub">${rateMoveText(l)}${l._lender?' · '+esc(l._lender):''}${l.rateBasis?' · '+esc(l.rateBasis):''}</span></span>`+
+        `<span class="rc-amt">${isNum(l.balance)?money(l.balance):'—'}</span></div>`).join('');
+  }).join('');
+  $('#rateList').innerHTML=(html||'<p class="rc-empty">No active loan has a rate change date on file.</p>')+
+    (noRate?`<div class="rc-none${state.rateMonth==='none'?' sel':''}" data-rcmonth="none">${noRate} active loan${noRate>1?'s':''} with no rate-change date on file — show them</div>`:'');
+  $('#rateList').querySelectorAll('[data-rcmonth]').forEach(e=>
+    e.addEventListener('click',()=>pickRateMonth(e.dataset.rcmonth)));
+  $('#rateList').querySelectorAll('[data-rcloan]').forEach(e=>
+    e.addEventListener('click',()=>pickRateLoan(+e.dataset.rcloan)));
+}
+
+/* ---------- clicking through to the loan list ---------- */
+// Every pick starts from a clean slate and leaves exactly one filter on, so
+// the count line under the controls always describes what you just clicked.
+function applyRateSelection(patch){
+  clearFilters();
+  Object.assign(state,patch);
+  syncChips();buildLadder();render();
+  closeRateModal();
+  document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function pickRateMonth(k){
+  applyRateSelection(state.rateMonth===k?{}:{rateMonth:k});
+}
+function pickRateYear(y){
+  applyRateSelection(state.rateLadder===y?{}:{rateLadder:y});
+}
+// Clicking one loan answers "which loan is this?" - pull the list down to
+// that loan alone and open its detail so the full terms are right there.
+function pickRateLoan(id){
+  const off=state.rateLoan===id;
+  if(!off)state.open.add(id);
+  applyRateSelection(off?{}:{rateLoan:id});
 }
 function openRateModal(){
-  buildRateModalLadder();
+  buildRateChart();
+  buildRateList();
+  hideRateTip();
   $('#rateModalOverlay').style.display='flex';
 }
 function closeRateModal(){
+  hideRateTip();
   $('#rateModalOverlay').style.display='none';
 }
 
@@ -629,9 +834,10 @@ function closeRateModal(){
 // mini progress bar (both toggle one of the ATTN_TEST buckets, below) so
 // clicking either one filters the loan list the same way.
 function applyAttnFilter(key){
-  state.attn = state.attn===key?null:key;
+  const next = state.attn===key?null:key;
   // clear other filters for a clean view
-  state.ladder=null;state.rateLadder=null;state.status.clear();state.cat.clear();state.lender.clear();$('#search').value='';state.q='';
+  clearFilters();
+  state.attn=next;
   syncChips();buildLadder();render();
   document.querySelector('.controls').scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -653,7 +859,22 @@ function buildAttn(){
 }
 
 /* ---------- Filters state ---------- */
-const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,ladder:null,rateLadder:null,open:new Set()};
+const state={q:'',status:new Set(),cat:new Set(),lender:new Set(),sort:'bal-desc',attn:null,ladder:null,rateLadder:null,rateMonth:null,rateLoan:null,open:new Set()};
+// Clicking a chart bar, a "needs attention" item or a rate-change row always
+// starts from a clean view, so the loan list below only ever answers the one
+// question that was just asked. Kept in one place so a new filter can't be
+// forgotten in half the handlers.
+function clearFilters(){
+  state.q='';state.attn=null;state.ladder=null;state.rateLadder=null;state.rateMonth=null;state.rateLoan=null;
+  state.status.clear();state.cat.clear();state.lender.clear();
+  $('#search').value='';
+}
+// Narrower version for the search box and the chips: those layer on top of
+// each other, but they do drop any chart / attention selection.
+function clearChartFilters(){
+  state.attn=null;state.rateLadder=null;state.rateMonth=null;state.rateLoan=null;
+  if(state.ladder){state.ladder=null;buildLadder();}
+}
 const ATTN_TEST={
   verify:l=>l._statusBucket==='verify',
   flag:l=>l._flag,
@@ -683,9 +904,7 @@ function buildChips(){
   document.querySelectorAll('[data-lender]').forEach(c=>c.addEventListener('click',()=>toggle(state.lender,c.dataset.lender,c)));
 }
 function toggle(set,key,el){
-  state.attn=null;
-  if(state.ladder){state.ladder=null;buildLadder();}
-  state.rateLadder=null;
+  clearChartFilters();
   if(set.has(key)){set.delete(key);el.classList.remove('on');}else{set.add(key);el.classList.add('on');}
   render();
 }
@@ -701,6 +920,8 @@ function filtered(){
     if(state.attn && !ATTN_TEST[state.attn](l))return false;
     if(state.ladder && ladderKey(l)!==state.ladder)return false;
     if(state.rateLadder && rateChangeKey(l)!==state.rateLadder)return false;
+    if(state.rateMonth && rateChangeMonthKey(l)!==state.rateMonth)return false;
+    if(state.rateLoan && l.id!==state.rateLoan)return false;
     if(state.status.size && !state.status.has(l._statusBucket))return false;
     if(state.cat.size && !state.cat.has(l.category))return false;
     if(state.lender.size && !state.lender.has(l._lender))return false;
@@ -1004,8 +1225,17 @@ function render(){
       :`active loans with a rate change due in ${state.rateLadder}`;
     label+=` · <span style="color:var(--green-deep)">${rateLabel}</span>`;
   }
+  if(state.rateMonth){
+    const monthLabel=state.rateMonth==='none'?'active loans with no rate-change date on file'
+      :`active loans with a rate change due in ${monthName(state.rateMonth,1)}`;
+    label+=` · <span style="color:var(--green-deep)">${monthLabel}</span>`;
+  }
+  if(state.rateLoan){
+    const l=LOANS.find(x=>x.id===state.rateLoan);
+    label+=` · <span style="color:var(--green-deep)">rate change on ${l?esc(l._name):'one loan'}</span>`;
+  }
   $('#count').innerHTML=label;
-  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn||state.ladder||state.rateLadder;
+  const anyFilter=state.q||state.status.size||state.cat.size||state.lender.size||state.attn||state.ladder||state.rateLadder||state.rateMonth||state.rateLoan;
   $('#clear').style.display=anyFilter?'inline':'none';
 }
 
@@ -1188,15 +1418,14 @@ $('#loanForm').addEventListener('submit',async e=>{
 
 /* ---------- wire up ---------- */
 $('#search').addEventListener('input',e=>{
-  state.q=e.target.value.trim().toLowerCase();state.attn=null;
-  if(state.ladder){state.ladder=null;buildLadder();}
-  state.rateLadder=null;
+  state.q=e.target.value.trim().toLowerCase();
+  clearChartFilters();
   render();
 });
 $('#sort').addEventListener('change',e=>{state.sort=e.target.value;render();});
 $('#clear').addEventListener('click',()=>{
-  state.q='';state.status.clear();state.cat.clear();state.lender.clear();state.attn=null;state.ladder=null;state.rateLadder=null;
-  $('#search').value='';syncChips();buildLadder();render();
+  clearFilters();
+  syncChips();buildLadder();render();
 });
 $('#exportBtn').addEventListener('click',exportToExcel);
 
