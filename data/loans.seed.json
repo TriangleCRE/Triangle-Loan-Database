@@ -588,8 +588,8 @@
     "due": "7th",
     "balance": 9953617.04,
     "orig": 12000000,
-    "priorDetails": "12/27/20  refinanced to SWAP loan",
-    "notes": "12/27/20  refinanced to SWAP loan",
+    "priorDetails": "Original Commercial Note Sept. 2018, $12,000,000 (Atlantic Union / deK Bowen), borrower PTAP Investments, LLC / APTAP Investments, LLC. Modified and substituted 12/27/2019 into a LIBOR + 2.30% interest-rate-swap structure (\"SWAP loan\"). Secured by first-priority deed of trust on 440 Gander Drive (Albemarle County), assignment of leases/rents, and a business-asset security agreement.",
+    "notes": "",
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
     "id": 19,
@@ -606,7 +606,8 @@
       }
     ],
     "rateChange": "2026-02-07",
-    "refi": "2020-12-27"
+    "refi": "2019-12-27",
+    "flags": "Maturity differs: Dec 2019 substituted note states final maturity 9/1/2029; dashboard shows 8/7/2029 per Jeryl master (8/26/26) – verify which is current before changing."
   },
   {
     "category": "CDFW Note",
