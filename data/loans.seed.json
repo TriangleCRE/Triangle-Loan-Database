@@ -161,7 +161,7 @@
     "balance": 3774804.42,
     "orig": 2010760,
     "prepay": "unclear from folder",
-    "priorDetails": "7/21/22 Refi - loan increased",
+    "priorDetails": "Original 2011 note: 20-yr amortization, matured 10/21/2020. Refinanced 7/21/22 with an increased loan amount, extending to the current 25-yr amortization maturing 7/21/2027.",
     "notes": "7/21/22 Refi - loan increased; Maturity corrected to 7/21/2027 - verified against the Jul 2022 refinance note (25-yr amortization) in Drive; the 10/21/2020 date was from the superseded original note.",
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
@@ -946,7 +946,7 @@
     "doc": "Yes",
     "source": "Jeryl master (8/26/26)",
     "id": 33,
-    "priorDetails": "Matruity date last pushed out on 2/6/2024",
+    "priorDetails": "Previously carried a stated maturity of 3/8/2025 (last pushed out 2/6/2024). Clarified 9/2026 as an on-demand revolving LOC with no fixed maturity, subject to annual review each 3/8.",
     "group": "Dahl Investments",
     "documents": [
       {
