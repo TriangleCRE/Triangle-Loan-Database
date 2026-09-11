@@ -1313,7 +1313,13 @@ function exportToExcel(){
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Loan Portfolio');
   const stamp=new Date().toISOString().slice(0,10);
-  XLSX.writeFile(wb,`Triangle-Loan-Portfolio-${stamp}.xlsx`);
+  // bookSST forces proper shared-string cells (t="s") instead of this
+  // library's default t="str" (technically reserved for cached formula
+  // results, not literal text) - harmless on its own, but some importers
+  // silently drop a hyperlink attached to a t="str" cell since it isn't a
+  // real string type. Shared strings is the standard, universally-
+  // supported representation, so every hyperlinked cell gets one.
+  XLSX.writeFile(wb,`Triangle-Loan-Portfolio-${stamp}.xlsx`,{bookSST:true});
 }
 
 /* ---------- Add / edit / delete ---------- */
