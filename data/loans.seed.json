@@ -152,7 +152,7 @@
     "account": "22113345",
     "opened": "2011-03-07",
     "maturity": "2027-07-21",
-    "amort": "20 yr",
+    "amort": "25 yr",
     "loanType": "7 years indicative fixed rate",
     "rate": 0.0465,
     "pmtM": 23642.33,
@@ -178,7 +178,8 @@
         "label": "PN",
         "url": "https://drive.google.com/file/d/1AcO1a9ODj9c2EZPzjO7CCj-R56tsl7VH/view"
       }
-    ]
+    ],
+    "refi": "2022-07-21"
   },
   {
     "category": "Bank Loan",
@@ -604,7 +605,8 @@
         "url": "https://drive.google.com/file/d/1P9rwg2KGvN9kXF32F8aaxytFRlHnm4vf/view"
       }
     ],
-    "rateChange": "2026-02-07"
+    "rateChange": "2026-02-07",
+    "refi": "2020-12-27"
   },
   {
     "category": "CDFW Note",
