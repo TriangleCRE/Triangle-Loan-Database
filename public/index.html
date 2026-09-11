@@ -1242,50 +1242,74 @@ function render(){
 /* ---------- Excel export ---------- */
 function exportToExcel(){
   const list=filtered();
-  const rows=list.map(l=>({
-    'Property':l._name,
-    'Address':l.address||'',
-    'Town':l.town||'',
-    'Owning company':l.company||'',
-    'Parent group / entity':l.group||'',
-    'Category':l.category||'',
-    'Status':l.status||'',
-    'Lender':l._lender||'',
-    'Lender contact':l.contact||'',
-    'Account #':l.account||'',
-    'Yardi property ID':l.yardiId||'',
-    'Structure':l.structure||'',
-    'Loan type':l.loanType||'',
-    'Opened':fmtDate(l.opened)||'',
-    'Refi / modification date':fmtDate(l.refi)||'',
-    'Maturity':fmtDate(l.maturity)||'',
-    'Amortization':l.amort||'',
-    'Interest rate':isNum(l.rate)?l.rate:'',
-    'Rate basis / notes':l.rateBasis||'',
-    'Rate change date':fmtDate(l.rateChange)||'',
-    'New rate / basis':l.newRate||'',
-    'Interest only':l.io||'',
-    'Prepayment penalty':l.prepay||'',
-    'Current balance':isNum(l.balance)?l.balance:'',
-    'Original amount':isNum(l.orig)?l.orig:'',
-    'Monthly payment':isNum(l.pmtM)?l.pmtM:'',
-    'Annual payment':isNum(l.pmtA)?l.pmtA:'',
-    'Payment due':l.due||'',
-    'Document on file':l.doc||'',
-    'Balance source':l.source||'',
-    'Notes':l.notes||'',
-    'Prior / original loan details':(l.priorDetails&&l.priorDetails!==0&&l.priorDetails!=='0')?l.priorDetails:'',
-    'Reconciliation flags':l.flags||''
-  }));
+  // One "Document N" column per document slot, up to whichever loan in this
+  // export has the most on file - each cell holds the file's label (BLA,
+  // PN, Note, etc.) and gets hyperlinked straight to it below.
+  const maxDocs=list.reduce((m,l)=>Math.max(m,(l.documents||[]).length),0);
+  const docCols=Array.from({length:maxDocs},(_,i)=>`Document ${i+1}`);
+  const rows=list.map(l=>{
+    const docs=l.documents||[];
+    const docFields={};
+    docCols.forEach((col,i)=>{docFields[col]=docs[i]?docs[i].label:'';});
+    return {
+      'Property':l._name,
+      'Address':l.address||'',
+      'Town':l.town||'',
+      'Owning company':l.company||'',
+      'Parent group / entity':l.group||'',
+      'Category':l.category||'',
+      'Status':l.status||'',
+      'Lender':l._lender||'',
+      'Lender contact':l.contact||'',
+      'Account #':l.account||'',
+      'Yardi property ID':l.yardiId||'',
+      'Structure':l.structure||'',
+      'Loan type':l.loanType||'',
+      'Opened':fmtDate(l.opened)||'',
+      'Refi / modification date':fmtDate(l.refi)||'',
+      'Maturity':fmtDate(l.maturity)||'',
+      'Amortization':l.amort||'',
+      'Interest rate':isNum(l.rate)?l.rate:'',
+      'Rate basis / notes':l.rateBasis||'',
+      'Rate change date':fmtDate(l.rateChange)||'',
+      'New rate / basis':l.newRate||'',
+      'Interest only':l.io||'',
+      'Prepayment penalty':l.prepay||'',
+      'Current balance':isNum(l.balance)?l.balance:'',
+      'Original amount':isNum(l.orig)?l.orig:'',
+      'Monthly payment':isNum(l.pmtM)?l.pmtM:'',
+      'Annual payment':isNum(l.pmtA)?l.pmtA:'',
+      'Payment due':l.due||'',
+      'Document on file':l.doc||'',
+      ...docFields,
+      'Balance source':l.source||'',
+      'Notes':l.notes||'',
+      'Prior / original loan details':(l.priorDetails&&l.priorDetails!==0&&l.priorDetails!=='0')?l.priorDetails:'',
+      'Reconciliation flags':l.flags||''
+    };
+  });
   const ws=XLSX.utils.json_to_sheet(rows);
-  ws['!cols']=Object.keys(rows[0]||{}).map(k=>({wch:Math.max(k.length,12,k==='Notes'||k==='Reconciliation flags'||k==='Prior / original loan details'?36:0)}));
-  const rateCol=Object.keys(rows[0]||{}).indexOf('Interest rate');
+  const headerKeys=Object.keys(rows[0]||{});
+  ws['!cols']=headerKeys.map(k=>({wch:Math.max(k.length,12,
+    (k==='Notes'||k==='Reconciliation flags'||k==='Prior / original loan details')?36:(k.startsWith('Document ')?22:0))}));
+  const rateCol=headerKeys.indexOf('Interest rate');
   if(rateCol>=0){
     for(let r=1;r<=rows.length;r++){
       const addr=XLSX.utils.encode_cell({r,c:rateCol});
       if(ws[addr]&&typeof ws[addr].v==='number')ws[addr].z='0.000%';
     }
   }
+  // Hyperlink each "Document N" cell straight to the file in Drive.
+  docCols.forEach((col,i)=>{
+    const c=headerKeys.indexOf(col);
+    if(c<0)return;
+    list.forEach((l,r)=>{
+      const doc=(l.documents||[])[i];
+      if(!doc)return;
+      const addr=XLSX.utils.encode_cell({r:r+1,c});
+      if(ws[addr])ws[addr].l={Target:doc.url,Tooltip:`Open ${doc.label}`};
+    });
+  });
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Loan Portfolio');
   const stamp=new Date().toISOString().slice(0,10);
