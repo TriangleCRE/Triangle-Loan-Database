@@ -969,6 +969,23 @@ function documentsHTML(l){
     `${esc(d.label)}</a>`
   ).join('')}</div>`;
 }
+// Formats a loan's `documents` array into the "Label: URL" per-line text the
+// edit form's Documents textarea shows and accepts.
+function documentsToText(docs){
+  return (Array.isArray(docs)?docs:[]).map(d=>`${d.label||'Document'}: ${d.url||''}`).join('\n');
+}
+// Inverse of documentsToText: parses the edit form's Documents textarea back
+// into a {label,url} array. Tolerant of blank lines and a missing label
+// (falls back to "Document"); a line with no recognizable URL is dropped.
+function parseDocumentsText(text){
+  return String(text||'').split('\n').map(line=>line.trim()).filter(Boolean).map(line=>{
+    const withLabel=line.match(/^(.*?)\s*:\s*(https?:\/\/\S+)$/);
+    if(withLabel)return{label:withLabel[1].trim()||'Document',url:withLabel[2]};
+    const bare=line.match(/^(https?:\/\/\S+)$/);
+    if(bare)return{label:'Document',url:bare[1]};
+    return null;
+  }).filter(Boolean);
+}
 function detailHTML(l){
   const rate=isNum(l.rate)?pct(l.rate):null;
   const dc=[l.category, l.company?('Owner: '+esc(l.company)):null].filter(Boolean)
@@ -1348,6 +1365,7 @@ const FIELD_DEFS=[
   {key:'pmtA',label:'Annual payment ($)',type:'number'},
   {key:'due',label:'Payment due',type:'text'},
   {key:'doc',label:'Document on file',type:'text'},
+  {key:'documents',label:'Documents (one per line: "Label: https://...")',type:'documents'},
   {key:'source',label:'Balance source',type:'text'},
   {key:'notes',label:'Notes',type:'textarea'},
   {key:'priorDetails',label:'Prior / original loan details',type:'text'},
@@ -1361,6 +1379,9 @@ function openModal(loan){
   $('#modalFields').innerHTML=FIELD_DEFS.map(f=>{
     let val=loan?loan[f.key]:(f.key==='status'?'Active':'');
     if(f.type==='percent'&&isNum(val))val=val*100;
+    if(f.type==='documents'){
+      return `<label class="mfield full"><span>${f.label}</span><textarea name="${f.key}" rows="3">${esc(documentsToText(val))}</textarea></label>`;
+    }
     if(val==null)val='';
     if(f.type==='textarea'){
       return `<label class="mfield full"><span>${f.label}</span><textarea name="${f.key}" rows="3">${esc(String(val))}</textarea></label>`;
@@ -1413,6 +1434,7 @@ $('#loanForm').addEventListener('submit',async e=>{
   FIELD_DEFS.forEach(f=>{
     let raw=fd.get(f.key);
     if(raw==null)return;
+    if(f.type==='documents'){payload[f.key]=parseDocumentsText(raw);return;}
     raw=String(raw).trim();
     if(raw==='')return;
     if(f.type==='number'){const n=Number(raw);if(!isNaN(n))payload[f.key]=n;}
