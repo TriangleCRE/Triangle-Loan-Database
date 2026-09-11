@@ -376,7 +376,7 @@ footer{border-top:1px solid var(--line);background:var(--surface)}
   <div class="ctrl-top">
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="search" type="text" placeholder="Search property, lender, address, account, town…" autocomplete="off">
+      <input id="search" type="text" placeholder="Search property, lender, address, town…" autocomplete="off">
     </div>
     <select class="sortsel" id="sort">
       <option value="bal-desc">Balance — high to low</option>
@@ -926,7 +926,7 @@ function filtered(){
     if(state.cat.size && !state.cat.has(l.category))return false;
     if(state.lender.size && !state.lender.has(l._lender))return false;
     if(state.q){
-      const hay=[l._name,l.address,l._lender,l.company,l.group,l.town,l.account,l.contact,l.loanType,l.notes].join(' ').toLowerCase();
+      const hay=[l._name,l.address,l._lender,l.company,l.group,l.town,l.contact,l.loanType,l.notes].join(' ').toLowerCase();
       if(!hay.includes(state.q))return false;
     }
     return true;
@@ -1343,7 +1343,7 @@ const FIELD_DEFS=[
   {key:'status',label:'Status',type:'text'},
   {key:'lender',label:'Lender',type:'text'},
   {key:'contact',label:'Lender contact',type:'text'},
-  {key:'account',label:'Account #',type:'text'},
+  {key:'account',label:'Account # (hidden elsewhere; leave blank to keep the existing one)',type:'text'},
   {key:'yardiId',label:'Yardi property ID',type:'text'},
   {key:'structure',label:'Structure',type:'text'},
   {key:'loanType',label:'Loan type',type:'text'},
