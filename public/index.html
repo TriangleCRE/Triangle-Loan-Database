@@ -996,7 +996,6 @@ function detailHTML(l){
     field('Town',l.town?esc(l.town):null,{txt:1}),
     field('Owning company',l.company?esc(l.company):null,{txt:1}),
     field('Parent group / entity',l.group?esc(l.group):null,{txt:1}),
-    field('Account #',l.account?esc(l.account):null),
     field('Yardi property ID',l.yardiId?esc(l.yardiId):null)
   ].join('');
   const terms=[
@@ -1286,7 +1285,6 @@ function exportToExcel(){
       'Status':l.status||'',
       'Lender':l._lender||'',
       'Lender contact':l.contact||'',
-      'Account #':l.account||'',
       'Yardi property ID':l.yardiId||'',
       'Structure':l.structure||'',
       'Loan type':l.loanType||'',
