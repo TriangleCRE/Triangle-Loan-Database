@@ -1243,14 +1243,22 @@ function render(){
 function exportToExcel(){
   const list=filtered();
   // One "Document N" column per document slot, up to whichever loan in this
-  // export has the most on file - each cell holds the file's label (BLA,
-  // PN, Note, etc.) and gets hyperlinked straight to it below.
+  // export has the most on file. Earlier attempts hyperlinked just the
+  // file's label (BLA, PN, etc.) via the spreadsheet library's own
+  // hyperlink relationships, but that didn't survive in whatever the file
+  // was actually opened with. Spelling out "label: full URL" as plain text
+  // instead means the link is right there either way - most spreadsheet
+  // apps auto-linkify a URL like this on their own, and even if one
+  // doesn't, the address itself is fully visible to read or copy.
   const maxDocs=list.reduce((m,l)=>Math.max(m,(l.documents||[]).length),0);
   const docCols=Array.from({length:maxDocs},(_,i)=>`Document ${i+1}`);
   const rows=list.map(l=>{
     const docs=l.documents||[];
     const docFields={};
-    docCols.forEach((col,i)=>{docFields[col]=docs[i]?docs[i].label:'';});
+    docCols.forEach((col,i)=>{
+      const d=docs[i];
+      docFields[col]=d?`${d.label}: ${d.url}`:'';
+    });
     return {
       'Property':l._name,
       'Address':l.address||'',
@@ -1291,7 +1299,7 @@ function exportToExcel(){
   const ws=XLSX.utils.json_to_sheet(rows);
   const headerKeys=Object.keys(rows[0]||{});
   ws['!cols']=headerKeys.map(k=>({wch:Math.max(k.length,12,
-    (k==='Notes'||k==='Reconciliation flags'||k==='Prior / original loan details')?36:(k.startsWith('Document ')?22:0))}));
+    (k==='Notes'||k==='Reconciliation flags'||k==='Prior / original loan details')?36:(k.startsWith('Document ')?60:0))}));
   const rateCol=headerKeys.indexOf('Interest rate');
   if(rateCol>=0){
     for(let r=1;r<=rows.length;r++){
@@ -1299,26 +1307,13 @@ function exportToExcel(){
       if(ws[addr]&&typeof ws[addr].v==='number')ws[addr].z='0.000%';
     }
   }
-  // Hyperlink each "Document N" cell straight to the file in Drive.
-  docCols.forEach((col,i)=>{
-    const c=headerKeys.indexOf(col);
-    if(c<0)return;
-    list.forEach((l,r)=>{
-      const doc=(l.documents||[])[i];
-      if(!doc)return;
-      const addr=XLSX.utils.encode_cell({r:r+1,c});
-      if(ws[addr])ws[addr].l={Target:doc.url,Tooltip:`Open ${doc.label}`};
-    });
-  });
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Loan Portfolio');
   const stamp=new Date().toISOString().slice(0,10);
   // bookSST forces proper shared-string cells (t="s") instead of this
   // library's default t="str" (technically reserved for cached formula
-  // results, not literal text) - harmless on its own, but some importers
-  // silently drop a hyperlink attached to a t="str" cell since it isn't a
-  // real string type. Shared strings is the standard, universally-
-  // supported representation, so every hyperlinked cell gets one.
+  // results, not literal text) - the standard, universally-supported
+  // representation every spreadsheet app expects for plain text.
   XLSX.writeFile(wb,`Triangle-Loan-Portfolio-${stamp}.xlsx`,{bookSST:true});
 }
 
